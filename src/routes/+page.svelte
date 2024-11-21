@@ -20,7 +20,7 @@
 	});
 
 	onMount(async () => {
-		fetch('http://localhost:9090/api/users/')
+		fetch('http://localhost:9090/api/users')
 			.then((response) => response.text())
 			.then((data) => {
 				console.log(data);
