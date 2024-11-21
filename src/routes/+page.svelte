@@ -5,6 +5,7 @@
 
 	let textFromBackend = '';
 	let usersText = '';
+	let bookingsText = '';
 
 	onMount(async () => {
 		fetch('http://localhost:9090/')
@@ -25,6 +26,19 @@
 			.then((data) => {
 				console.log(data);
 				usersText = data;
+			})
+			.catch((error) => {
+				console.log(error);
+				return [];
+			});
+	});
+
+	onMount(async () => {
+		fetch('http://localhost:9090/api/bookings')
+			.then((response) => response.text())
+			.then((data) => {
+				console.log(data);
+				bookingsText = data;
 			})
 			.catch((error) => {
 				console.log(error);
@@ -55,6 +69,9 @@
 	</h2>
 	<h2>
 		{usersText}
+	</h2>
+	<h2>
+		{bookingsText}
 	</h2>
 </section>
 
