@@ -20,7 +20,26 @@
 	});
 
 	onMount(async () => {
-		fetch('http://localhost:9090/api/users')
+		fetch('http://localhost:9090/api/getUsers')
+			.then((response) => response.text())
+			.then((data) => {
+				console.log(data);
+				usersText = data;
+			})
+			.catch((error) => {
+				console.log(error);
+				return [];
+			});
+	});
+
+	onMount(async () => {
+		fetch('http://localhost:9090/api/postUsers', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({"id": "122", "name": "Kristin", "email": "k@k.no"})
+		})
 			.then((response) => response.text())
 			.then((data) => {
 				console.log(data);
