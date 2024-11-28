@@ -6,6 +6,9 @@
 	let textFromBackend = '';
 	let usersText = '';
 	let bookingsText = '';
+	let input1 = '';
+	let input2 = '';
+	let input3 = '';
 
 	onMount(async () => {
 		fetch('http://localhost:9090/')
@@ -33,13 +36,16 @@
 			});
 	});
 
-	onMount(async () => {
+	function handleSubmit() {
+		console.log('Input 1:', input1);
+		console.log('Input 2:', input2);
+		console.log('Input 3:', input3);
 		fetch('http://localhost:9090/api/postUsers', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({"id": "122", "name": "Kristin", "email": "k@k.no"})
+			body: JSON.stringify({ id: input1, name: input2, email: input3 })
 		})
 			.then((response) => response.text())
 			.then((data) => {
@@ -50,7 +56,7 @@
 				console.log(error);
 				return [];
 			});
-	});
+	}
 
 	onMount(async () => {
 		fetch('http://localhost:9090/api/bookings')
@@ -86,6 +92,17 @@
 	<h2>
 		{textFromBackend}
 	</h2>
+	<!-- New form with three input fields and a button -->
+	<form on:submit|preventDefault={handleSubmit}>
+		<p>Id:</p>
+		<input type="text" bind:value={input1} placeholder="Input 1" />
+		<p>Name:</p>
+		<input type="text" bind:value={input2} placeholder="Input 2" />
+		<p>Email:</p>
+		<input type="text" bind:value={input3} placeholder="Input 3" />
+		<br />
+		<button type="submit">Submit</button>
+	</form>
 	<h2>
 		{usersText}
 	</h2>
