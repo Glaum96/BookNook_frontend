@@ -24,47 +24,46 @@
 		};
 	}
 
-	function handleSubmit() {
-
-		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime);
-
-		fetch('http://localhost:9090/api/postBooking', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				startTime: startDateTime,
-				endTime: endDateTime,
-				date: dateVariable,
-				userId: userId,
-				responsibleName: responsibleName,
-				responsibleNumber: responsibleNumber })
-		})
-			.then((response) => response.text())
-			.then((data) => {
-				console.log(data);
-			})
-			.catch((error) => {
-				console.log(error);
-				return [];
-			});
+	async function fetchBookings() {
+		try {
+			const response = await fetch('http://localhost:9090/api/bookings');
+			const data = await response.json();
+			bookings = data;
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
-	onMount(async () => {
-		fetch('http://localhost:9090/api/bookings')
-			.then((response) => response.text())
-			.then((data) => {
-				console.log(data);
-			/*	bookings = data.split("}");*/
-				bookings = JSON.parse(data);
+	async function handleSubmit() {
+		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime);
 
-			})
-			.catch((error) => {
-				console.log(error);
-				return [];
+		try {
+			const response = await fetch('http://localhost:9090/api/postBooking', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					startTime: startDateTime,
+					endTime: endDateTime,
+					date: dateVariable,
+					userId: userId,
+					responsibleName: responsibleName,
+					responsibleNumber: responsibleNumber
+				})
 			});
-	});
+
+			if (response.ok) {
+				await fetchBookings(); // Fetch updated bookings
+			} else {
+				console.log('Failed to add booking');
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	onMount(fetchBookings);
 
 
 </script>
@@ -98,10 +97,9 @@
 			{#each bookings as booking}
 				<li>
 
-					<p><strong>Start-tidspunkt:</strong> {booking.from}</p>
-					<p><strong>Slutt-tidspunkt:</strong> {booking.to}</p>
-					<p><strong>BrukerId:</strong> {booking.bookerId}</p>
-					<p><strong>Id:</strong> {booking.id}</p>
+					<p><strong>Start-tidspunkt:</strong> {booking.startTime}</p>
+					<p><strong>Slutt-tidspunkt:</strong> {booking.endTime}</p>
+					<p><strong>BrukerId:</strong> {booking.responsibleName}</p>
 				</li>
 			{/each}
 		</ul>
