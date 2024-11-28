@@ -1,56 +1,49 @@
+
 <script>
 	import { onMount } from 'svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
 
-	let textFromBackend = '';
-	let usersText = '';
-	let bookingsText = '';
-	let input1 = '';
-	let input2 = '';
-	let input3 = '';
+	let startTime = new Date().toISOString().slice(0, 16);
+	let endTime = new Date().toISOString().slice(0, 16);
+	let dateVariable = '';
+	let userId = "1001";
+	let responsibleName = "";
+	let responsibleNumber ="";
+	let bookings = [];
 
-	onMount(async () => {
-		fetch('http://localhost:9090/')
-			.then((response) => response.text())
-			.then((data) => {
-				console.log(data);
-				textFromBackend = data;
-			})
-			.catch((error) => {
-				console.log(error);
-				return [];
-			});
-	});
+	function combineDateAndTime(dateVariable, startTime, endTime) {
+		const date = new Date(dateVariable);
+		const [startHours, startMinutes] = startTime.split(':');
+		const [endHours, endMinutes] = endTime.split(':');
 
-	onMount(async () => {
-		fetch('http://localhost:9090/api/getUsers')
-			.then((response) => response.text())
-			.then((data) => {
-				console.log(data);
-				usersText = data;
-			})
-			.catch((error) => {
-				console.log(error);
-				return [];
-			});
-	});
+		const startDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHours, startMinutes);
+		const endDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), endHours, endMinutes);
+
+		return {
+			startDateTime: startDateTime.toISOString(),
+			endDateTime: endDateTime.toISOString()
+		};
+	}
 
 	function handleSubmit() {
-		console.log('Input 1:', input1);
-		console.log('Input 2:', input2);
-		console.log('Input 3:', input3);
-		fetch('http://localhost:9090/api/postUsers', {
+
+		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime);
+
+		fetch('http://localhost:9090/api/postBooking', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ id: input1, name: input2, email: input3 })
+			body: JSON.stringify({
+				startTime: startDateTime,
+				endTime: endDateTime,
+				date: dateVariable,
+				userId: userId,
+				responsibleName: responsibleName,
+				responsibleNumber: responsibleNumber })
 		})
 			.then((response) => response.text())
 			.then((data) => {
 				console.log(data);
-				usersText = data;
 			})
 			.catch((error) => {
 				console.log(error);
@@ -63,13 +56,17 @@
 			.then((response) => response.text())
 			.then((data) => {
 				console.log(data);
-				bookingsText = data;
+			/*	bookings = data.split("}");*/
+				bookings = JSON.parse(data);
+
 			})
 			.catch((error) => {
 				console.log(error);
 				return [];
 			});
 	});
+
+
 </script>
 
 <svelte:head>
@@ -77,66 +74,79 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<section>
-	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcome_fallback} alt="Welcome" />
-			</picture>
-		</span>
+<div class="container">
+	<section class="booking">
+		<h1>Book takterassen</h1>
+		<form on:submit|preventDefault={handleSubmit}>
+			<p>Dato:</p>
+			<input type="date" bind:value={dateVariable} placeholder="Dato" />
+			<p>Start-tidspunkt:</p>
+			<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" />
+			<p>Slutt-tidspunkt:</p>
+			<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" />
+			<p>Ansvarlig-navn:</p>
+			<input type="text" bind:value={responsibleName} placeholder="Navn" />
+			<p>Ansvarlig-telefonnummer:</p>
+			<input type="text" bind:value={responsibleNumber} placeholder="Nummer" />
+			<br />
+			<button type="submit">Submit</button>
+		</form>
+	</section>
+	<section class="your-bookings">
+		<h1>Dine bookinger</h1>
+		<ul>
+			{#each bookings as booking}
+				<li>
 
-		til DIN takterrasse-booking-app skrevet i <b>SvelteKit</b>
-	</h1>
-
-	<h2>
-		{textFromBackend}
-	</h2>
-	<!-- New form with three input fields and a button -->
-	<form on:submit|preventDefault={handleSubmit}>
-		<p>Id:</p>
-		<input type="text" bind:value={input1} placeholder="Input 1" />
-		<p>Name:</p>
-		<input type="text" bind:value={input2} placeholder="Input 2" />
-		<p>Email:</p>
-		<input type="text" bind:value={input3} placeholder="Input 3" />
-		<br />
-		<button type="submit">Submit</button>
-	</form>
-	<h2>
-		{usersText}
-	</h2>
-	<h2>
-		{bookingsText}
-	</h2>
-</section>
+					<p><strong>Start-tidspunkt:</strong> {booking.from}</p>
+					<p><strong>Slutt-tidspunkt:</strong> {booking.to}</p>
+					<p><strong>BrukerId:</strong> {booking.bookerId}</p>
+					<p><strong>Id:</strong> {booking.id}</p>
+				</li>
+			{/each}
+		</ul>
+	</section>
+</div>
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 0.6;
-	}
+    .container {
+        display: flex;
+        justify-content: center;
+        gap: 2rem; /* Adjust the gap as needed */
+        padding: 1rem;
+        flex-wrap: nowrap; /* Prevent wrapping */
+    }
 
-	h1 {
-		width: 100%;
-	}
+    section.booking, section.your-bookings {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+        border-radius: 10px;
+        padding: 1rem;
+    }
 
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
+    section.booking {
+        flex: 0 0 70%; /* 70% of the container */
+    }
 
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
-	}
+    section.your-bookings {
+        flex: 0 0 30%; /* 30% of the container */
+    }
+
+    section.booking h1, section.your-bookings h1 {
+        align-self: flex-start; /* Align h1 to the left */
+        font-size: 2rem; /* Example font size */
+        margin: 0; /* Remove default margin */
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+        section.booking, section.your-bookings {
+            flex: 0 0 100%; /* Full width on smaller screens */
+        }
+    }
 </style>
