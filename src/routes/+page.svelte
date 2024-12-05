@@ -39,7 +39,13 @@
 		try {
 			const response = await fetch('http://localhost:9090/api/bookings');
 			const data = await response.json();
-			bookings = data;
+			if (data === null || data === undefined) {
+				bookings = [];
+				console.warn('Det er noe rart med fetchBookings')
+			}
+			else {
+				bookings = data;
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -81,13 +87,22 @@
 			});
 
 			if (response.ok) {
-				await fetchBookings(); // Fetch updated bookings
+				await fetchBookings();
+				resetForm()
 			} else {
 				console.log('Failed to add booking');
 			}
 		} catch (error) {
 			console.log(error);
 		}
+	}
+
+	const resetForm = () => {
+		startTime = new Date().toISOString().slice(0, 16);
+		endTime = new Date().toISOString().slice(0, 16);
+		dateVariable = '';
+		responsibleName = '';
+		responsibleNumber = '';
 	}
 
 	onMount(fetchBookings);
@@ -118,16 +133,20 @@
 	</section>
 	<section class="your-bookings">
 		<h1>Dine bookinger</h1>
-		<ul>
-			{#each bookings as booking}
-				<li>
-					<p><strong>Start-tidspunkt:</strong> {booking.startTime}</p>
-					<p><strong>Slutt-tidspunkt:</strong> {booking.endTime}</p>
-					<p><strong>BrukerId:</strong> {booking.responsibleName}</p>
-					<button on:click={() => handleDeleteBooking(booking.id)}>Delete</button>
-				</li>
-			{/each}
-		</ul>
+		{#if bookings.length === 0}
+			<p>Det finnes ingen bookinger enda</p>
+		{:else}
+			<ul>
+				{#each bookings as booking}
+					<li>
+						<p><strong>Start-tidspunkt:</strong> {booking.startTime}</p>
+						<p><strong>Slutt-tidspunkt:</strong> {booking.endTime}</p>
+						<p><strong>BrukerId:</strong> {booking.responsibleName}</p>
+						<button on:click={() => handleDeleteBooking(booking.id)}>Delete</button>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 	</section>
 </div>
 
