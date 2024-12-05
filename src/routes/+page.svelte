@@ -1,13 +1,12 @@
-
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 
 	let startTime = new Date().toISOString().slice(0, 16);
 	let endTime = new Date().toISOString().slice(0, 16);
 	let dateVariable = '';
-	let userId = "1001";
-	let responsibleName = "";
-	let responsibleNumber ="";
+	let userId = '1001';
+	let responsibleName = '';
+	let responsibleNumber = '';
 	let bookings = [];
 
 	function combineDateAndTime(dateVariable, startTime, endTime) {
@@ -15,8 +14,20 @@
 		const [startHours, startMinutes] = startTime.split(':');
 		const [endHours, endMinutes] = endTime.split(':');
 
-		const startDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHours, startMinutes);
-		const endDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), endHours, endMinutes);
+		const startDateTime = new Date(
+			date.getFullYear(),
+			date.getMonth(),
+			date.getDate(),
+			startHours,
+			startMinutes
+		);
+		const endDateTime = new Date(
+			date.getFullYear(),
+			date.getMonth(),
+			date.getDate(),
+			endHours,
+			endMinutes
+		);
 
 		return {
 			startDateTime: startDateTime.toISOString(),
@@ -29,6 +40,22 @@
 			const response = await fetch('http://localhost:9090/api/bookings');
 			const data = await response.json();
 			bookings = data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	async function handleDeleteBooking(bookingId: string) {
+		try {
+			const response = await fetch(`http://localhost:9090/api/deleteBooking/${bookingId}`, {
+				method: 'DELETE'
+			});
+
+			if (response.ok) {
+				await fetchBookings(); // Fetch updated bookings
+			} else {
+				console.log('Failed to delete booking');
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -64,8 +91,6 @@
 	}
 
 	onMount(fetchBookings);
-
-
 </script>
 
 <svelte:head>
@@ -96,10 +121,10 @@
 		<ul>
 			{#each bookings as booking}
 				<li>
-
 					<p><strong>Start-tidspunkt:</strong> {booking.startTime}</p>
 					<p><strong>Slutt-tidspunkt:</strong> {booking.endTime}</p>
 					<p><strong>BrukerId:</strong> {booking.responsibleName}</p>
+					<button on:click={() => handleDeleteBooking(booking.id)}>Delete</button>
 				</li>
 			{/each}
 		</ul>
@@ -107,44 +132,47 @@
 </div>
 
 <style>
-    .container {
-        display: flex;
-        justify-content: center;
-        gap: 2rem; /* Adjust the gap as needed */
-        padding: 1rem;
-        flex-wrap: nowrap; /* Prevent wrapping */
-    }
+	.container {
+		display: flex;
+		justify-content: center;
+		gap: 2rem; /* Adjust the gap as needed */
+		padding: 1rem;
+		flex-wrap: nowrap; /* Prevent wrapping */
+	}
 
-    section.booking, section.your-bookings {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background-color: white;
-        border-radius: 10px;
-        padding: 1rem;
-    }
+	section.booking,
+	section.your-bookings {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		background-color: white;
+		border-radius: 10px;
+		padding: 1rem;
+	}
 
-    section.booking {
-        flex: 0 0 70%; /* 70% of the container */
-    }
+	section.booking {
+		flex: 0 0 70%; /* 70% of the container */
+	}
 
-    section.your-bookings {
-        flex: 0 0 30%; /* 30% of the container */
-    }
+	section.your-bookings {
+		flex: 0 0 30%; /* 30% of the container */
+	}
 
-    section.booking h1, section.your-bookings h1 {
-        align-self: flex-start; /* Align h1 to the left */
-        font-size: 2rem; /* Example font size */
-        margin: 0; /* Remove default margin */
-    }
+	section.booking h1,
+	section.your-bookings h1 {
+		align-self: flex-start; /* Align h1 to the left */
+		font-size: 2rem; /* Example font size */
+		margin: 0; /* Remove default margin */
+	}
 
-    @media (max-width: 768px) {
-        .container {
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-        }
-        section.booking, section.your-bookings {
-            flex: 0 0 100%; /* Full width on smaller screens */
-        }
-    }
+	@media (max-width: 768px) {
+		.container {
+			flex-wrap: wrap; /* Allow wrapping on smaller screens */
+		}
+		section.booking,
+		section.your-bookings {
+			flex: 0 0 100%; /* Full width on smaller screens */
+		}
+	}
 </style>
