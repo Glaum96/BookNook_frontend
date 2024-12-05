@@ -1,6 +1,15 @@
 <script lang="ts">
 	import MineBookinger from '$lib/mineBookinger.svelte';
 	import { onMount } from 'svelte';
+	import { checkAuth, isAuthenticated } from '../stores/auth';
+	import { goto } from '$app/navigation';
+
+	onMount(() => {
+		checkAuth();
+		$: if (!$isAuthenticated) {
+			goto('/login');
+		}
+	});
 
 	let startTime = new Date().toISOString().slice(0, 16);
 	let endTime = new Date().toISOString().slice(0, 16);
@@ -53,15 +62,6 @@
 	async function handleSubmit() {
 		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime);
 
-		console.log(
-			startDateTime,
-			endDateTime,
-			dateVariable,
-			userId,
-			responsibleName,
-			responsibleNumber
-		);
-
 		try {
 			const response = await fetch('http://localhost:9090/api/postBooking', {
 				method: 'POST',
@@ -105,28 +105,30 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<div class="container">
-	<section class="booking">
-		<h1>Book takterassen</h1>
-		<form on:submit|preventDefault={handleSubmit}>
-			<p>Dato:</p>
-			<input type="date" bind:value={dateVariable} placeholder="Dato" />
-			<p>Start-tidspunkt:</p>
-			<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" />
-			<p>Slutt-tidspunkt:</p>
-			<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" />
-			<p>Ansvarlig-navn:</p>
-			<input type="text" bind:value={responsibleName} placeholder="Navn" />
-			<p>Ansvarlig-telefonnummer:</p>
-			<input type="text" bind:value={responsibleNumber} placeholder="Nummer" />
-			<br />
-			<button type="submit">Submit</button>
-		</form>
-	</section>
-	<section class="your-bookings">
-		<MineBookinger fetchBookingsFunction={fetchBookings} />
-	</section>
-</div>
+{#if $isAuthenticated}
+	<div class="container">
+		<section class="booking">
+			<h1>Book takterassen</h1>
+			<form on:submit|preventDefault={handleSubmit}>
+				<p>Dato:</p>
+				<input type="date" bind:value={dateVariable} placeholder="Dato" />
+				<p>Start-tidspunkt:</p>
+				<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" />
+				<p>Slutt-tidspunkt:</p>
+				<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" />
+				<p>Ansvarlig-navn:</p>
+				<input type="text" bind:value={responsibleName} placeholder="Navn" />
+				<p>Ansvarlig-telefonnummer:</p>
+				<input type="text" bind:value={responsibleNumber} placeholder="Nummer" />
+				<br />
+				<button type="submit">Submit</button>
+			</form>
+		</section>
+		<section class="your-bookings">
+			<MineBookinger fetchBookingsFunction={fetchBookings} />
+		</section>
+	</div>
+{/if}
 
 <style>
 	.container {
