@@ -1,4 +1,5 @@
 <script lang="ts">
+	import MineBookinger from '$lib/mineBookinger.svelte';
 	import { onMount } from 'svelte';
 
 	let startTime = new Date().toISOString().slice(0, 16);
@@ -7,9 +8,8 @@
 	let userId = '1001';
 	let responsibleName = '';
 	let responsibleNumber = '';
-	let bookings = [];
 
-	function combineDateAndTime(dateVariable, startTime, endTime) {
+	function combineDateAndTime(dateVariable: string, startTime: string, endTime: string) {
 		const date = new Date(dateVariable);
 		const [startHours, startMinutes] = startTime.split(':');
 		const [endHours, endMinutes] = endTime.split(':');
@@ -18,15 +18,15 @@
 			date.getFullYear(),
 			date.getMonth(),
 			date.getDate(),
-			startHours,
-			startMinutes
+			Number(startHours),
+			Number(startMinutes)
 		);
 		const endDateTime = new Date(
 			date.getFullYear(),
 			date.getMonth(),
 			date.getDate(),
-			endHours,
-			endMinutes
+			Number(endHours),
+			Number(endMinutes)
 		);
 
 		return {
@@ -37,31 +37,14 @@
 
 	async function fetchBookings() {
 		try {
-			const response = await fetch('http://localhost:9090/api/bookings');
-			const data = await response.json();
-			if (data === null || data === undefined) {
-				bookings = [];
-				console.warn('Det er noe rart med fetchBookings')
-			}
-			else {
-				bookings = data;
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
-	async function handleDeleteBooking(bookingId: string) {
-		try {
-			const response = await fetch(`http://localhost:9090/api/deleteBooking/${bookingId}`, {
-				method: 'DELETE'
+			const response = await fetch('http://localhost:9090/api/myBookings', {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					'User-Id': userId
+				}
 			});
-
-			if (response.ok) {
-				await fetchBookings(); // Fetch updated bookings
-			} else {
-				console.log('Failed to delete booking');
-			}
+			return await response.json();
 		} catch (error) {
 			console.log(error);
 		}
@@ -69,6 +52,15 @@
 
 	async function handleSubmit() {
 		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime);
+
+		console.log(
+			startDateTime,
+			endDateTime,
+			dateVariable,
+			userId,
+			responsibleName,
+			responsibleNumber
+		);
 
 		try {
 			const response = await fetch('http://localhost:9090/api/postBooking', {
@@ -88,7 +80,7 @@
 
 			if (response.ok) {
 				await fetchBookings();
-				resetForm()
+				resetForm();
 			} else {
 				console.log('Failed to add booking');
 			}
@@ -103,7 +95,7 @@
 		dateVariable = '';
 		responsibleName = '';
 		responsibleNumber = '';
-	}
+	};
 
 	onMount(fetchBookings);
 </script>
@@ -132,21 +124,7 @@
 		</form>
 	</section>
 	<section class="your-bookings">
-		<h1>Dine bookinger</h1>
-		{#if bookings.length === 0}
-			<p>Det finnes ingen bookinger enda</p>
-		{:else}
-			<ul>
-				{#each bookings as booking}
-					<li>
-						<p><strong>Start-tidspunkt:</strong> {booking.startTime}</p>
-						<p><strong>Slutt-tidspunkt:</strong> {booking.endTime}</p>
-						<p><strong>BrukerId:</strong> {booking.responsibleName}</p>
-						<button on:click={() => handleDeleteBooking(booking.id)}>Delete</button>
-					</li>
-				{/each}
-			</ul>
-		{/if}
+		<MineBookinger fetchBookingsFunction={fetchBookings} />
 	</section>
 </div>
 
