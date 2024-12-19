@@ -1,38 +1,34 @@
 <script>
-
 </script>
 
 <header>
-
 	<nav>
 		<a href="/">Seilduksgata 6B</a>
 		<a href="/minside">Min side</a>
 	</nav>
-
 </header>
 
 <style>
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-    }
+	header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem;
+	}
 
-    nav {
-        display: flex;
-        width: 100%;
-    }
+	nav {
+		display: flex;
+		width: 100%;
+	}
 
-    nav a:first-child {
-        margin-right: auto;
-        font-size: 1.5rem;
-    }
+	nav a:first-child {
+		margin-right: auto;
+		font-size: 1.5rem;
+	}
 
-    nav a {
-        text-decoration: none;
-        color: black;
-        font-size: 1rem;
-    }
-
+	nav a {
+		text-decoration: none;
+		color: black;
+		font-size: 1rem;
+	}
 </style>
