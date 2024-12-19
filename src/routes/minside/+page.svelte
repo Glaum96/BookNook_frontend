@@ -1,21 +1,17 @@
 <script>
 	import { onMount } from 'svelte';
-	import './minside.css'; // Import the CSS file
+	import './minside.css';
+	import MineBookinger from '$lib/mineBookinger.svelte'; // Import the CSS file
+
+	const userId = "673f11a096afef5bf6502318";
 
 	let user = {
+		id: userId,
 		name: "",
 		phoneNumber: "",
 		email: "",
-		apartmentNumber: ""
+		apartmentNumber: "",
 	};
-
-	function handleSubmit(event) {
-		event.preventDefault();
-		console.log('Form submitted');
-	}
-
-	//Henter bruker med en gitt brukerId
-	const userId = "673f11a096afef5bf6502318";
 
 	async function fetchUser() {
 		const response = await fetch(`http://localhost:9090/api/getUser/${userId}`, {
@@ -32,7 +28,53 @@
 		user.apartmentNumber = userResponse.apartmentNumber;
 	}
 
-	onMount(fetchUser);
+	async function updateUser() {
+		try {
+			const response = await fetch(`http://localhost:9090/api/users/${userId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(user)
+			});
+			const success = await response.json();
+			if (success) {
+				console.log('User updated successfully');
+			} else {
+				console.error('Failed to update user');
+			}
+		} catch (error) {
+			console.error('Error updating user:', error);
+		}
+	}
+
+	async function fetchBookings() {
+		try {
+			const response = await fetch('http://localhost:9090/api/myBookings', {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					//Denne må oppdateres til å bruker userId
+					'User-Id': '1001'
+				}
+			});
+
+			return await response.json();
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	function handleSubmit(event) {
+		event.preventDefault();
+		updateUser();
+	}
+
+	onMount(() =>
+	{
+		fetchUser();
+		fetchBookings();
+	});
 </script>
 
 <svelte:head>
@@ -61,5 +103,7 @@
 	</section>
 	<section class="bookings">
 		<h3>Dine bookinger: </h3>
+		<MineBookinger fetchBookingsFunction={fetchBookings} />
+
 	</section>
 </div>
