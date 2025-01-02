@@ -5,6 +5,7 @@
 	<nav>
 		<a href="/">Seilduksgata 6B</a>
 		<a href="/minside">Min side</a>
+		<a href="/admin">Admin</a>
 	</nav>
 </header>
 
@@ -30,5 +31,6 @@
 		text-decoration: none;
 		color: black;
 		font-size: 1rem;
+	margin-right: 1.5rem
 	}
 </style>
