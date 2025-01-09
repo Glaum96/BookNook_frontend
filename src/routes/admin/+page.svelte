@@ -3,6 +3,7 @@
 	import './admin.css';
 	import { onMount } from 'svelte';
 	import type { Booking } from '../../types/Booking';
+	import { getDate, getTime } from '$lib/functions/dateFunctions.js';
 
 	let users: User[] = [];
 	let bookings: Booking[] = [];
@@ -17,7 +18,6 @@
 				}
 			});
 			users  = await response.json();
-			console.log("Users:", users);
 		} catch (error) {
 			console.log(error);
 		}
@@ -50,53 +50,53 @@
 	<meta name="description" content="Dette er admin-siden" />
 </svelte:head>
 
-<div >
-	<section >
-	Dette er admin-siden
-	</section>
 	<div class="container">
 			<section class="users">
-				<h3> Alle brukere: </h3>
+				<h3 class="heading"> Alle brukere: </h3>
 				<table class="user-table">
 					<thead>
 					<tr>
-						<th>Bruker-id</th>
 						<th>Navn</th>
 						<th>Epost</th>
 						<th>Leilighetsnummer</th>
+						<th>Bruker-id</th>
+						<th></th>
 					</tr>
 					</thead>
 					<tbody>
 					{#each users as user}
 						<tr>
-							<td>{user.id}</td>
 							<td>{user.name}</td>
 							<td>{user.email}</td>
 							<td>{user.apartmentNumber}</td>
+							<td>{user.id}</td>
+							<td><button class="delete-button">X</button></td>
 						</tr>
 					{/each}
 					</tbody>
 				</table>
 			</section>
 			<section class="bookings">
-				<h3> Alle bookinger: </h3>
+				<h3 class="heading"> Alle bookinger: </h3>
 				<table class="booking-table">
 					<thead>
 					<tr>
-						<th>Start-tidspunkt</th>
-						<th>Slutt-tidspunkt</th>
+						<th>Dato</th>
+						<th>Tidspunkt</th>
 						<th>Ansvarlig</th>
 						<th>Telefonnummer</th>
+						<th></th>
 					</tr>
 					</thead>
 					<tbody>
 
 					{#each bookings as booking}
 						<tr>
-							<td>{booking.startTime}</td>
-							<td>{booking.endTime}</td>
+							<td>{getDate(booking.startTime)}</td>
+							<td>{getTime(booking.startTime)} - {getTime(booking.endTime)}</td>
 							<td>{booking.responsibleName}</td>
 							<td>{booking.responsibleNumber}</td>
+							<td><button class="delete-button">X</button></td>
 						</tr>
 					{/each}
 					</tbody>
@@ -104,4 +104,3 @@
 			</section>
 	</div>
 
-</div>

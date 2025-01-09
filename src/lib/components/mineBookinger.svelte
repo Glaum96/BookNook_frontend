@@ -1,13 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import type { Booking } from '../../types/Booking';
 	export let fetchBookingsFunction: () => Promise<Booking[]>;
-
-	type Booking = {
-		id: string;
-		startTime: string;
-		endTime: string;
-		responsibleName: string;
-	};
+	import './mineBookinger.css';
+	import { getDate, getTime } from '$lib/functions/dateFunctions';
 
 	let bookings: Booking[] = [];
 
@@ -41,32 +37,23 @@
 	onMount(() => {
 		fetchBookings();
 	});
+
 </script>
 
-<!-- Display the list of bookings -->
-<ul class="booking-list">
-	<h1>Dine bookinger</h1>
-	<ul>
-		{#each bookings as booking}
-			<li>
-				<p><strong>Start-tidspunkt:</strong> {booking.startTime}</p>
-				<p><strong>Slutt-tidspunkt:</strong> {booking.endTime}</p>
-				<p><strong>BrukerId:</strong> {booking.responsibleName}</p>
-				<button on:click={() => handleDeleteBooking(booking.id)}>Delete</button>
-			</li>
-		{/each}
-	</ul>
-</ul>
 
-<style>
-	/* Add your styles here */
-	.booking-list {
-		list-style-type: none;
-		padding: 0;
-	}
+<div class="booking-cards">
+	<h3 class="header">Dine bookinger</h3>
 
-	.booking-item {
-		padding: 10px;
-		border-bottom: 1px solid #ccc;
-	}
-</style>
+	{#each bookings as booking}
+		<div class="booking-card">
+			<p><strong>Dato: </strong> {getDate(booking.startTime)}</p>
+			<p><strong>Tidsperiode: </strong> {getTime(booking.startTime)} - {getTime(booking.endTime)}</p>
+			<p><strong>Ansvarlig: </strong> {booking.responsibleName}</p>
+			<p><strong>Telefonnummer: </strong> {booking.responsibleNumber}</p>
+			<button class="delete-button" on:click={() => handleDeleteBooking(booking.id)}>Slett booking</button>
+		</div>
+	{/each}
+</div>
+
+
+

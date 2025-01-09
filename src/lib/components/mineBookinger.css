@@ -1,0 +1,30 @@
+
+.header {
+    color: #525A8A;
+}
+
+.booking-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.booking-card {
+    background-color: #EAF3FF;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.delete-button {
+    background-color: #EA9C8F;
+    color: #B01C03;
+    border-radius: 5px;
+    border: none;
+    height: 36px;
+    margin-top: 16px;
+    font-size: 1.1rem;
+    float: right;
+    font-weight: bold;
+}

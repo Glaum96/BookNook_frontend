@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import './minside.css';
-	import MineBookinger from '$lib/mineBookinger.svelte'; // Import the CSS file
+	import MineBookinger from '$lib/components/mineBookinger.svelte';
 
 	const userId = "673f11a096afef5bf6502318";
 
@@ -84,25 +84,24 @@
 
 <div class="container">
 	<section class="user">
+		<h3 class="header">Din profil</h3>
 		<form on:submit|preventDefault={handleSubmit}>
 			<div class="inputcolumn">
-				<p>Navn:</p>
+				<p class="profile-input-label">Navn:</p>
 				<input bind:value={user.name} />
-				<p>Tlf:</p>
+				<p class="profile-input-label">Tlf:</p>
 				<input bind:value={user.phoneNumber} />
-				<p>Epost:</p>
+				<p class="profile-input-label">Epost:</p>
 				<input bind:value={user.email} />
+				<p class="profile-input-label">Leilighetsnummer:</p>
+				<input bind:value={user.apartmentNumber} />
 			</div>
 			<div class="inputcolumn">
-				<p>Leilighetsnummer:</p>
-				<input bind:value={user.apartmentNumber} />
-				<br />
 				<button type="submit" class="button">Lagre endringer</button>
 			</div>
 		</form>
 	</section>
 	<section class="bookings">
-		<h3>Dine bookinger: </h3>
 		<MineBookinger fetchBookingsFunction={fetchBookings} />
 
 	</section>

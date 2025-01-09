@@ -3,6 +3,11 @@
     flex-direction: column;
     gap: 2rem;
     padding: 1rem;
+    overflow-x: auto;
+}
+
+.heading {
+    color: #525A8A;
 }
 
 p {
@@ -14,6 +19,10 @@ p {
 
 .users, .bookings {
     margin: 0 10px;
+    background-color: white;
+    padding: 32px;
+    border-radius: 10px;
+    overflow-x: auto;
 }
 
 .user-table, .booking-table {
@@ -25,11 +34,21 @@ p {
 }
 
 .user-table th, .user-table td, .booking-table th, .booking-table td {
-    border: 1px solid #ddd;
+    border: 1px solid #EAF3FF;;
     padding: 8px;
 }
 
 .user-table th, .booking-table th {
-    background-color: #f2f2f2;
+    background-color: #EAF3FF;;
     color: black;
+}
+
+.delete-button{
+    background-color: #EA9C8F;
+    color: #B01C03;
+    border-radius: 5px;
+    border: none;
+    font-size: 1.1rem;
+    float: right;
+    font-weight: bold;
 }
