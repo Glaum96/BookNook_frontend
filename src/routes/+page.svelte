@@ -1,8 +1,9 @@
 <script lang="ts">
-	import MineBookinger from '$lib/mineBookinger.svelte';
+	import MineBookinger from '$lib/components/mineBookinger.svelte';
 	import { onMount } from 'svelte';
 	import { checkAuth, isAuthenticated } from '../stores/auth';
 	import { goto } from '$app/navigation';
+	import './page.css';
 
 	onMount(() => {
 		checkAuth();
@@ -108,20 +109,20 @@
 {#if $isAuthenticated}
 	<div class="container">
 		<section class="booking">
-			<h1>Book takterassen</h1>
+			<h3 class="header">Legg inn en booking</h3>
 			<form on:submit|preventDefault={handleSubmit}>
-				<p>Dato:</p>
+				<p class="input-lable">Velg dato:</p>
 				<input type="date" bind:value={dateVariable} placeholder="Dato" />
-				<p>Start-tidspunkt:</p>
+				<p class="input-lable">Velg start-tidspunkt:</p>
 				<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" />
-				<p>Slutt-tidspunkt:</p>
+				<p class="input-lable">Velg slutt-tidspunkt:</p>
 				<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" />
-				<p>Ansvarlig-navn:</p>
+				<p class="input-lable">Hvem er ansvarlig for bookingen?</p>
 				<input type="text" bind:value={responsibleName} placeholder="Navn" />
-				<p>Ansvarlig-telefonnummer:</p>
-				<input type="text" bind:value={responsibleNumber} placeholder="Nummer" />
+				<p class="input-lable">Oppgi ansvarlig sitt telefonnummer: </p>
+				<input type="text" bind:value={responsibleNumber} placeholder="Telefonnummer" />
 				<br />
-				<button type="submit">Submit</button>
+				<button type="submit" class="button">Opprett booking</button>
 			</form>
 		</section>
 		<section class="your-bookings">
@@ -130,47 +131,4 @@
 	</div>
 {/if}
 
-<style>
-	.container {
-		display: flex;
-		justify-content: center;
-		gap: 2rem; /* Adjust the gap as needed */
-		padding: 1rem;
-		flex-wrap: nowrap; /* Prevent wrapping */
-	}
 
-	section.booking,
-	section.your-bookings {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		background-color: white;
-		border-radius: 10px;
-		padding: 1rem;
-	}
-
-	section.booking {
-		flex: 0 0 70%; /* 70% of the container */
-	}
-
-	section.your-bookings {
-		flex: 0 0 30%; /* 30% of the container */
-	}
-
-	section.booking h1,
-	section.your-bookings h1 {
-		align-self: flex-start; /* Align h1 to the left */
-		font-size: 2rem; /* Example font size */
-		margin: 0; /* Remove default margin */
-	}
-
-	@media (max-width: 768px) {
-		.container {
-			flex-wrap: wrap; /* Allow wrapping on smaller screens */
-		}
-		section.booking,
-		section.your-bookings {
-			flex: 0 0 100%; /* Full width on smaller screens */
-		}
-	}
-</style>

@@ -15,22 +15,29 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem;
+		background-color: white;
+
 	}
 
 	nav {
 		display: flex;
 		width: 100%;
+
 	}
 
 	nav a:first-child {
 		margin-right: auto;
 		font-size: 1.5rem;
+		font-weight: bold;
+		color: #525A8A;
 	}
 
 	nav a {
 		text-decoration: none;
-		color: black;
 		font-size: 1rem;
-	margin-right: 1.5rem
-	}
+			font-weight: bold;
+		margin-right: 1.5rem;
+		color: #525A8A;
+
+  }
 </style>
