@@ -10,9 +10,14 @@
 		if (!$isAuthenticated) {
 			goto('/login')
 		}
+		token = localStorage.getItem('authToken')
+		console.log('Min side mounted')
+		fetchUser()
+		fetchBookings()
 	})
 
 	const userId = '673f11a096afef5bf6502318'
+	let token: string | null = null
 
 	let user = {
 		id: userId,
@@ -27,8 +32,15 @@
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
 			},
 		})
+
+		if (!response.ok) {
+			console.error('Failed to fetch user')
+			return
+		}
+
 		const userResponse = await response.json()
 
 		user.name = userResponse.name
@@ -43,6 +55,7 @@
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
 				},
 				body: JSON.stringify(user),
 			})
@@ -58,19 +71,21 @@
 	}
 
 	async function fetchBookings() {
-		try {
-			const response = await fetch('http://localhost:9090/api/myBookings', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					//Denne må oppdateres til å bruker userId
-					'User-Id': '1001',
-				},
-			})
+		const response = await fetch('http://localhost:9090/api/myBookings', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				//Denne må oppdateres til å bruker userId
+				'User-Id': '1001',
+				Authorization: `Bearer ${token}`,
+			},
+		})
 
+		if (response.ok) {
 			return await response.json()
-		} catch (error) {
-			console.log(error)
+		} else {
+			console.log('status: ', response.status)
+			console.log('error: ', response)
 		}
 	}
 
@@ -78,12 +93,6 @@
 		event.preventDefault()
 		updateUser()
 	}
-
-	onMount(() => {
-		console.log('Min side mounted')
-		fetchUser()
-		fetchBookings()
-	})
 </script>
 
 <svelte:head>
