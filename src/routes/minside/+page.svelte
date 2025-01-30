@@ -1,9 +1,14 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import './minside.css';
 	import MineBookinger from '$lib/components/mineBookinger.svelte';
+	import { fetchMyBookings } from '$lib/api/bookings.js';
+	import type { Booking } from '../../types/Booking';
+	import { fetchUser, updateUser } from '$lib/api/user';
+
 
 	const userId = "673f11a096afef5bf6502318";
+	const userIdBooking = '1001'
 
 	let user = {
 		id: userId,
@@ -13,68 +18,18 @@
 		apartmentNumber: "",
 	};
 
-	async function fetchUser() {
-		const response = await fetch(`http://localhost:9090/api/getUser/${userId}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-		const userResponse = await response.json();
+	let bookings: Booking[] = [];
 
-		user.name = userResponse.name;
-		user.phoneNumber = userResponse.phoneNumber;
-		user.email = userResponse.email;
-		user.apartmentNumber = userResponse.apartmentNumber;
-	}
-
-	async function updateUser() {
-		try {
-			const response = await fetch(`http://localhost:9090/api/users/${userId}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(user)
-			});
-			const success = await response.json();
-			if (success) {
-				console.log('User updated successfully');
-			} else {
-				console.error('Failed to update user');
-			}
-		} catch (error) {
-			console.error('Error updating user:', error);
-		}
-	}
-
-	async function fetchBookings() {
-		try {
-			const response = await fetch('http://localhost:9090/api/myBookings', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					//Denne må oppdateres til å bruker userId
-					'User-Id': '1001'
-				}
-			});
-
-			return await response.json();
-		} catch (error) {
-			console.log(error);
-		}
-	}
+	onMount(async () => {
+		bookings = await fetchMyBookings(userIdBooking);
+		user = await fetchUser(userId);
+	});
 
 	function handleSubmit(event) {
 		event.preventDefault();
-		updateUser();
+		updateUser(user);
 	}
 
-	onMount(() =>
-	{
-		fetchUser();
-		fetchBookings();
-	});
 </script>
 
 <svelte:head>
@@ -102,7 +57,6 @@
 		</form>
 	</section>
 	<section class="bookings">
-		<MineBookinger fetchBookingsFunction={fetchBookings} />
-
+		<MineBookinger userId={userId} bookings={bookings}/>
 	</section>
 </div>

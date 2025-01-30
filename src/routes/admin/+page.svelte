@@ -4,46 +4,18 @@
 	import { onMount } from 'svelte';
 	import type { Booking } from '../../types/Booking';
 	import { getDate, getTime } from '$lib/functions/dateFunctions.js';
+	import { fetchAllUsers } from '$lib/api/user';
+	import { fetchAllBookings } from '$lib/api/bookings';
 
 	let users: User[] = [];
 	let bookings: Booking[] = [];
 
-
-	async function getAllUsers() {
-		try {
-			const response = await fetch('http://localhost:9090/api/getUsers', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			});
-			users  = await response.json();
-		} catch (error) {
-			console.log(error);
-		}
-}
-	async function getAllBookings() {
-		try {
-			const response = await fetch('http://localhost:9090/api/bookings', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-				}
-			});
-			bookings = await response.json();
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
 	onMount(async () => {
-		await getAllBookings();
-		await getAllUsers();
-
+		users = await fetchAllUsers();
+		bookings = await fetchAllBookings();
 	});
 
 </script>
-
 
 <svelte:head>
 	<title>Admin</title>
