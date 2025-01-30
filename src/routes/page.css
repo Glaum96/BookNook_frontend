@@ -1,60 +1,60 @@
-.container {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    padding: 1rem;
-    flex-wrap: nowrap;
+.main-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1rem;
+  flex-wrap: nowrap;
 }
 
 .header {
-    color: #525A8A;
+  color: #525a8a;
 }
 
 section.booking,
 section.your-bookings {
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    border-radius: 10px;
-    padding: 1rem;
-    width: 70%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 10px;
+  padding: 1rem;
+  width: 70%;
 }
 
 .input-lable {
-    font-size: 1.1rem;
-    color: black;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
+  font-size: 1.1rem;
+  color: black;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
 }
 
 input {
-    background-color: #f0f0f0;
-    border-radius: 5px;
-    border: none;
-    padding: 0.5rem;
-    box-sizing: border-box;
-    width: 100%;
-    height: 45px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  border: none;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  width: 100%;
+  height: 45px;
 }
 
 .button {
-    background-color: #9AD3A4;
-    color: #346C3E;
-    border-radius: 5px;
-    border: none;
-    height: 36px;
-    margin-top: 16px;
-    font-size: 1.1rem;
-    float: right;
-    font-weight: bold;
+  background-color: #9ad3a4;
+  color: #346c3e;
+  border-radius: 5px;
+  border: none;
+  height: 36px;
+  margin-top: 16px;
+  font-size: 1.1rem;
+  float: right;
+  font-weight: bold;
 }
 
 @media (max-width: 768px) {
-    .container {
-        flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    }
-    section.booking,
-    section.your-bookings {
-        flex: 0 0 100%; /* Full width on smaller screens */
-    }
+  .main-container {
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  }
+  section.booking,
+  section.your-bookings {
+    flex: 0 0 100%; /* Full width on smaller screens */
+  }
 }

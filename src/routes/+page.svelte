@@ -1,28 +1,28 @@
 <script lang="ts">
-	import MineBookinger from '$lib/components/mineBookinger.svelte';
-	import { onMount } from 'svelte';
-	import { checkAuth, isAuthenticated } from '../stores/auth';
-	import { goto } from '$app/navigation';
-	import './page.css';
+	import MineBookinger from '$lib/components/mineBookinger.svelte'
+	import { onMount } from 'svelte'
+	import './page.css'
+	import { goto } from '$app/navigation'
+	import { checkAuth, isAuthenticated } from '../stores/auth'
 
 	onMount(() => {
-		checkAuth();
-		$: if (!$isAuthenticated) {
-			goto('/login');
+		checkAuth()
+		if (!$isAuthenticated) {
+			goto('/login')
 		}
-	});
+	})
 
-	let startTime = new Date().toISOString().slice(0, 16);
-	let endTime = new Date().toISOString().slice(0, 16);
-	let dateVariable = '';
-	let userId = '1001';
-	let responsibleName = '';
-	let responsibleNumber = '';
+	let startTime = new Date().toISOString().slice(0, 16)
+	let endTime = new Date().toISOString().slice(0, 16)
+	let dateVariable = ''
+	let userId = '1001'
+	let responsibleName = ''
+	let responsibleNumber = ''
 
 	function combineDateAndTime(dateVariable: string, startTime: string, endTime: string) {
-		const date = new Date(dateVariable);
-		const [startHours, startMinutes] = startTime.split(':');
-		const [endHours, endMinutes] = endTime.split(':');
+		const date = new Date(dateVariable)
+		const [startHours, startMinutes] = startTime.split(':')
+		const [endHours, endMinutes] = endTime.split(':')
 
 		const startDateTime = new Date(
 			date.getFullYear(),
@@ -30,19 +30,19 @@
 			date.getDate(),
 			Number(startHours),
 			Number(startMinutes)
-		);
+		)
 		const endDateTime = new Date(
 			date.getFullYear(),
 			date.getMonth(),
 			date.getDate(),
 			Number(endHours),
 			Number(endMinutes)
-		);
+		)
 
 		return {
 			startDateTime: startDateTime.toISOString(),
-			endDateTime: endDateTime.toISOString()
-		};
+			endDateTime: endDateTime.toISOString(),
+		}
 	}
 
 	async function fetchBookings() {
@@ -51,23 +51,23 @@
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
-					'User-Id': userId
-				}
-			});
-			return await response.json();
+					'User-Id': userId,
+				},
+			})
+			return await response.json()
 		} catch (error) {
-			console.log(error);
+			console.log(error)
 		}
 	}
 
 	async function handleSubmit() {
-		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime);
+		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime)
 
 		try {
 			const response = await fetch('http://localhost:9090/api/postBooking', {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
 					startTime: startDateTime,
@@ -75,30 +75,33 @@
 					date: dateVariable,
 					userId: userId,
 					responsibleName: responsibleName,
-					responsibleNumber: responsibleNumber
-				})
-			});
+					responsibleNumber: responsibleNumber,
+				}),
+			})
 
 			if (response.ok) {
-				await fetchBookings();
-				resetForm();
+				await fetchBookings()
+				resetForm()
 			} else {
-				console.log('Failed to add booking');
+				console.log('Failed to add booking')
 			}
 		} catch (error) {
-			console.log(error);
+			console.log(error)
 		}
 	}
 
 	const resetForm = () => {
-		startTime = new Date().toISOString().slice(0, 16);
-		endTime = new Date().toISOString().slice(0, 16);
-		dateVariable = '';
-		responsibleName = '';
-		responsibleNumber = '';
-	};
+		startTime = new Date().toISOString().slice(0, 16)
+		endTime = new Date().toISOString().slice(0, 16)
+		dateVariable = ''
+		responsibleName = ''
+		responsibleNumber = ''
+	}
 
-	onMount(fetchBookings);
+	onMount(() => {
+		console.log('Min side mounted')
+		fetchBookings()
+	})
 </script>
 
 <svelte:head>
@@ -107,7 +110,7 @@
 </svelte:head>
 
 {#if $isAuthenticated}
-	<div class="container">
+	<div class="main-container">
 		<section class="booking">
 			<h3 class="header">Legg inn en booking</h3>
 			<form on:submit|preventDefault={handleSubmit}>
@@ -119,7 +122,7 @@
 				<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" />
 				<p class="input-lable">Hvem er ansvarlig for bookingen?</p>
 				<input type="text" bind:value={responsibleName} placeholder="Navn" />
-				<p class="input-lable">Oppgi ansvarlig sitt telefonnummer: </p>
+				<p class="input-lable">Oppgi ansvarlig sitt telefonnummer:</p>
 				<input type="text" bind:value={responsibleNumber} placeholder="Telefonnummer" />
 				<br />
 				<button type="submit" class="button">Opprett booking</button>
@@ -130,5 +133,3 @@
 		</section>
 	</div>
 {/if}
-
-
