@@ -26,6 +26,7 @@ export async function logOut() {
 	})
 
 	localStorage.removeItem('authToken')
+	localStorage.removeItem('user')
 	isAuthenticated.set(false)
 
 	console.log(response)

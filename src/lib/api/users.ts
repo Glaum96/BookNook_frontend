@@ -63,3 +63,9 @@ export async function updateUser(user: User) {
 		console.error('Error updating user:', error)
 	}
 }
+
+export const addUserToLocalStorage = async (userId: string) => {
+	const user = await fetchUser(userId)
+	console.log('user:', user)
+	localStorage.setItem('user', JSON.stringify(user))
+}
