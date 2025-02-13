@@ -4,6 +4,8 @@
 	import './page.css'
 	import { goto } from '$app/navigation'
 	import { checkAuth, isAuthenticated } from '../stores/auth'
+	import { fetchMyBookings, postBooking } from '$lib/api/bookings'
+	import type { Booking } from '../types/Booking'
 
 	onMount(() => {
 		checkAuth()
@@ -12,12 +14,17 @@
 		}
 	})
 
+	let bookings: Booking[] = []
 	let startTime = new Date().toISOString().slice(0, 16)
 	let endTime = new Date().toISOString().slice(0, 16)
 	let dateVariable = ''
 	let userId = '1001'
 	let responsibleName = ''
 	let responsibleNumber = ''
+
+	onMount(async () => {
+		bookings = await fetchMyBookings(userId)
+	})
 
 	function combineDateAndTime(dateVariable: string, startTime: string, endTime: string) {
 		const date = new Date(dateVariable)
@@ -45,49 +52,19 @@
 		}
 	}
 
-	async function fetchBookings() {
-		try {
-			const response = await fetch('http://localhost:9090/api/myBookings', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					'User-Id': userId,
-				},
-			})
-			return await response.json()
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
 	async function handleSubmit() {
 		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime)
-
-		try {
-			const response = await fetch('http://localhost:9090/api/postBooking', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					startTime: startDateTime,
-					endTime: endDateTime,
-					date: dateVariable,
-					userId: userId,
-					responsibleName: responsibleName,
-					responsibleNumber: responsibleNumber,
-				}),
-			})
-
-			if (response.ok) {
-				await fetchBookings()
-				resetForm()
-			} else {
-				console.log('Failed to add booking')
-			}
-		} catch (error) {
-			console.log(error)
+		const newBooking = {
+			startTime: startDateTime,
+			endTime: endDateTime,
+			date: dateVariable,
+			userId: userId,
+			responsibleName: responsibleName,
+			responsibleNumber: responsibleNumber,
 		}
+		await postBooking(newBooking)
+		bookings = await fetchMyBookings('1001')
+		resetForm()
 	}
 
 	const resetForm = () => {
@@ -100,7 +77,6 @@
 
 	onMount(() => {
 		console.log('Min side mounted')
-		fetchBookings()
 	})
 </script>
 
@@ -129,7 +105,7 @@
 			</form>
 		</section>
 		<section class="your-bookings">
-			<MineBookinger fetchBookingsFunction={fetchBookings} />
+			<MineBookinger {userId} {bookings} />
 		</section>
 	</div>
 {/if}

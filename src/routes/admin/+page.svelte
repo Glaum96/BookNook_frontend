@@ -6,6 +6,8 @@
 	import { getDate, getTime } from '$lib/functions/dateFunctions.js'
 	import { goto } from '$app/navigation'
 	import { checkAuth, isAuthenticated } from '../../stores/auth'
+	import { fetchAllBookings } from '$lib/api/bookings'
+	import { fetchAllUsers } from '$lib/api/users'
 
 	onMount(() => {
 		checkAuth()
@@ -17,37 +19,10 @@
 	let users: User[] = []
 	let bookings: Booking[] = []
 
-	async function getAllUsers() {
-		try {
-			const response = await fetch('http://localhost:9090/api/getUsers', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			users = await response.json()
-		} catch (error) {
-			console.log(error)
-		}
-	}
-	async function getAllBookings() {
-		try {
-			const response = await fetch('http://localhost:9090/api/bookings', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			bookings = await response.json()
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
 	onMount(async () => {
 		console.log('Admin page mounted')
-		await getAllBookings()
-		await getAllUsers()
+		await fetchAllBookings()
+		await fetchAllUsers()
 	})
 </script>
 

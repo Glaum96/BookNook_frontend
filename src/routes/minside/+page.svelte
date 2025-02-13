@@ -4,19 +4,24 @@
 	import MineBookinger from '$lib/components/mineBookinger.svelte'
 	import { goto } from '$app/navigation'
 	import { checkAuth, isAuthenticated } from '../../stores/auth'
+	import { fetchMyBookings } from '$lib/api/bookings.js'
+	import type { Booking } from '../../types/Booking'
+	import { fetchUser, updateUser } from '$lib/api/users'
 
-	onMount(() => {
+	onMount(async () => {
 		checkAuth()
 		if (!$isAuthenticated) {
 			goto('/login')
 		}
 		token = localStorage.getItem('authToken')
 		console.log('Min side mounted')
-		fetchUser()
-		fetchBookings()
+
+		bookings = await fetchMyBookings(userIdBooking)
+		user = await fetchUser(userId)
 	})
 
 	const userId = '673f11a096afef5bf6502318'
+	const userIdBooking = '1001'
 	let token: string | null = null
 
 	let user = {
@@ -27,71 +32,11 @@
 		apartmentNumber: '',
 	}
 
-	async function fetchUser() {
-		const response = await fetch(`http://localhost:9090/api/getUser/${userId}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`,
-			},
-		})
-
-		if (!response.ok) {
-			console.error('Failed to fetch user')
-			return
-		}
-
-		const userResponse = await response.json()
-
-		user.name = userResponse.name
-		user.phoneNumber = userResponse.phoneNumber
-		user.email = userResponse.email
-		user.apartmentNumber = userResponse.apartmentNumber
-	}
-
-	async function updateUser() {
-		try {
-			const response = await fetch(`http://localhost:9090/api/users/${userId}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${token}`,
-				},
-				body: JSON.stringify(user),
-			})
-			const success = await response.json()
-			if (success) {
-				console.log('User updated successfully')
-			} else {
-				console.error('Failed to update user')
-			}
-		} catch (error) {
-			console.error('Error updating user:', error)
-		}
-	}
-
-	async function fetchBookings() {
-		const response = await fetch('http://localhost:9090/api/myBookings', {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				//Denne må oppdateres til å bruker userId
-				'User-Id': '1001',
-				Authorization: `Bearer ${token}`,
-			},
-		})
-
-		if (response.ok) {
-			return await response.json()
-		} else {
-			console.log('status: ', response.status)
-			console.log('error: ', response)
-		}
-	}
+	let bookings: Booking[] = []
 
 	function handleSubmit(event: Event) {
 		event.preventDefault()
-		updateUser()
+		updateUser(user)
 	}
 </script>
 
@@ -120,6 +65,6 @@
 		</form>
 	</section>
 	<section class="min-side-bookings">
-		<MineBookinger fetchBookingsFunction={fetchBookings} />
+		<MineBookinger {userId} {bookings} />
 	</section>
 </div>
