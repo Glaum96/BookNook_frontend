@@ -21,8 +21,8 @@
 
 	onMount(async () => {
 		console.log('Admin page mounted')
-		await fetchAllBookings()
-		await fetchAllUsers()
+		bookings = await fetchAllBookings()
+		users = await fetchAllUsers()
 	})
 </script>
 

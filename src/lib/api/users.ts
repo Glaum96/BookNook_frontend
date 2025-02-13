@@ -1,11 +1,17 @@
 import type { User } from '../../types/User'
 
+const getAuthToken = () => {
+	return localStorage.getItem('authToken')
+}
+
 export async function fetchAllUsers() {
 	try {
+		const token = getAuthToken()
 		const response = await fetch('http://localhost:9090/api/getUsers', {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
 			},
 		})
 		return await response.json()
@@ -16,10 +22,12 @@ export async function fetchAllUsers() {
 
 export async function fetchUser(userId: string) {
 	try {
+		const token = getAuthToken()
 		const response = await fetch(`http://localhost:9090/api/getUser/${userId}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
 			},
 		})
 		return await response.json()
@@ -36,10 +44,12 @@ export async function deleteUser(userId: string) {
 
 export async function updateUser(user: User) {
 	try {
+		const token = getAuthToken()
 		const response = await fetch(`http://localhost:9090/api/users/${user.id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
 			},
 			body: JSON.stringify(user),
 		})
