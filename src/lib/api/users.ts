@@ -30,7 +30,9 @@ export async function fetchUser(userId: string) {
 				Authorization: `Bearer ${token}`,
 			},
 		})
-		return await response.json()
+		const user = await response.json()
+		console.log('UUuuuuuuuuuuuSER: ', user)
+		return user
 	} catch (error) {
 		console.log(error)
 	}

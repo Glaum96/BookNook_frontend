@@ -3,7 +3,6 @@
 	import { goto } from '$app/navigation'
 	import { addUserToLocalStorage } from '$lib/api/users'
 
-	let userId = '673f11a096afef5bf6502318' // TODO: Use the actual userId
 	let username = ''
 	let password = ''
 	let errorMessage = writable('')
@@ -22,6 +21,7 @@
 			if (response.ok) {
 				const data = await response.json()
 				localStorage.setItem('authToken', data['authToken'])
+				const userId = data['userId']
 				console.log('DATA', data['message'])
 				goto('/') // Redirect to the home page or another protected route
 
