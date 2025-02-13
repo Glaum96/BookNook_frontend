@@ -1,54 +1,53 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 1rem;
-    overflow-x: auto;
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem;
+  overflow-x: auto;
 }
 
-.heading {
-    color: #525A8A;
+.admin-heading {
+  color: #525a8a;
 }
 
-p {
-    font-size: medium;
-    color: black;
-    margin-top: 24px;
-    margin-bottom: 8px;
+.users-admin-panel,
+.bookings {
+  margin: 0 10px;
+  background-color: white;
+  padding: 32px;
+  border-radius: 10px;
+  overflow-x: auto;
 }
 
-.users, .bookings {
-    margin: 0 10px;
-    background-color: white;
-    padding: 32px;
-    border-radius: 10px;
-    overflow-x: auto;
+.admin-user-table,
+.admin-booking-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 1rem;
+  text-align: left;
 }
 
-.user-table, .booking-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
-    font-size: 1rem;
-    text-align: left;
+.user-table th,
+.user-table td,
+.booking-table th,
+.booking-table td {
+  border: 1px solid #eaf3ff;
+  padding: 8px;
 }
 
-.user-table th, .user-table td, .booking-table th, .booking-table td {
-    border: 1px solid #EAF3FF;;
-    padding: 8px;
+.user-table th,
+.booking-table th {
+  background-color: #eaf3ff;
+  color: black;
 }
 
-.user-table th, .booking-table th {
-    background-color: #EAF3FF;;
-    color: black;
-}
-
-.delete-button{
-    background-color: #EA9C8F;
-    color: #B01C03;
-    border-radius: 5px;
-    border: none;
-    font-size: 1.1rem;
-    float: right;
-    font-weight: bold;
+.delete-button {
+  background-color: #ea9c8f;
+  color: #b01c03;
+  border-radius: 5px;
+  border: none;
+  font-size: 1.1rem;
+  float: right;
+  font-weight: bold;
 }

@@ -1,80 +1,43 @@
-<script>
-	import { onMount } from 'svelte';
-	import './minside.css';
-	import MineBookinger from '$lib/components/mineBookinger.svelte';
+<script lang="ts">
+	import { onMount } from 'svelte'
+	import './minside.css'
+	import MineBookinger from '$lib/components/mineBookinger.svelte'
+	import { goto } from '$app/navigation'
+	import { checkAuth, isAuthenticated } from '../../stores/auth'
+	import { fetchMyBookings } from '$lib/api/bookings.js'
+	import type { Booking } from '../../types/Booking'
+	import { fetchUser, updateUser } from '$lib/api/users'
 
-	const userId = "673f11a096afef5bf6502318";
+	onMount(async () => {
+		checkAuth()
+		if (!$isAuthenticated) {
+			goto('/login')
+		}
+		token = localStorage.getItem('authToken')
+		console.log('Min side mounted')
+
+		bookings = await fetchMyBookings(userIdBooking)
+		user = await fetchUser(userId)
+	})
+
+	const userId = '673f11a096afef5bf6502318'
+	const userIdBooking = '1001'
+	let token: string | null = null
 
 	let user = {
 		id: userId,
-		name: "",
-		phoneNumber: "",
-		email: "",
-		apartmentNumber: "",
-	};
-
-	async function fetchUser() {
-		const response = await fetch(`http://localhost:9090/api/getUser/${userId}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-		const userResponse = await response.json();
-
-		user.name = userResponse.name;
-		user.phoneNumber = userResponse.phoneNumber;
-		user.email = userResponse.email;
-		user.apartmentNumber = userResponse.apartmentNumber;
+		name: '',
+		phoneNumber: '',
+		email: '',
+		apartmentNumber: '',
 	}
 
-	async function updateUser() {
-		try {
-			const response = await fetch(`http://localhost:9090/api/users/${userId}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(user)
-			});
-			const success = await response.json();
-			if (success) {
-				console.log('User updated successfully');
-			} else {
-				console.error('Failed to update user');
-			}
-		} catch (error) {
-			console.error('Error updating user:', error);
-		}
+	let bookings: Booking[] = []
+
+	function handleSubmit(event: Event) {
+		event.preventDefault()
+		updateUser(user)
 	}
-
-	async function fetchBookings() {
-		try {
-			const response = await fetch('http://localhost:9090/api/myBookings', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					//Denne må oppdateres til å bruker userId
-					'User-Id': '1001'
-				}
-			});
-
-			return await response.json();
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
-	function handleSubmit(event) {
-		event.preventDefault();
-		updateUser();
-	}
-
-	onMount(() =>
-	{
-		fetchUser();
-		fetchBookings();
-	});
 </script>
 
 <svelte:head>
@@ -82,11 +45,11 @@
 	<meta name="description" content="Dette er min side" />
 </svelte:head>
 
-<div class="container">
-	<section class="user">
+<div class="min-side-container">
+	<section class="min-side-user">
 		<h3 class="header">Din profil</h3>
 		<form on:submit|preventDefault={handleSubmit}>
-			<div class="inputcolumn">
+			<div class="min-side-inputcolumn">
 				<p class="profile-input-label">Navn:</p>
 				<input bind:value={user.name} />
 				<p class="profile-input-label">Tlf:</p>
@@ -101,8 +64,7 @@
 			</div>
 		</form>
 	</section>
-	<section class="bookings">
-		<MineBookinger fetchBookingsFunction={fetchBookings} />
-
+	<section class="min-side-bookings">
+		<MineBookinger {userId} {bookings} />
 	</section>
 </div>

@@ -1,45 +1,19 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { Booking } from '../../types/Booking';
-	export let fetchBookingsFunction: () => Promise<Booking[]>;
-	import './mineBookinger.css';
-	import { getDate, getTime } from '$lib/functions/dateFunctions';
+	import type { Booking } from '../../types/Booking'
+	import './mineBookinger.css'
+	import { getDate, getTime } from '$lib/functions/dateFunctions'
+	import { fetchMyBookings, deleteBooking } from '$lib/api/bookings'
 
-	let bookings: Booking[] = [];
+	export let userId: string
+	export let bookings: Booking[]
 
-	// Fetch bookings from the backend endpoint
-	async function fetchBookings() {
-		try {
-			const data = await fetchBookingsFunction();
-			bookings = data;
-		} catch (error) {
-			console.log(error);
-		}
+	const handleDeleteBooking = async (bookingId?: string) => {
+		if (!bookingId) return
+
+		await deleteBooking(bookingId)
+		bookings = await fetchMyBookings(userId)
 	}
-
-	async function handleDeleteBooking(bookingId: string) {
-		try {
-			const response = await fetch(`http://localhost:9090/api/deleteBooking/${bookingId}`, {
-				method: 'DELETE'
-			});
-
-			if (response.ok) {
-				await fetchBookings(); // Fetch updated bookings
-			} else {
-				console.log('Failed to delete booking');
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
-	// Fetch bookings when the component is mounted
-	onMount(() => {
-		fetchBookings();
-	});
-
 </script>
-
 
 <div class="booking-cards">
 	<h3 class="header">Dine bookinger</h3>
@@ -54,6 +28,3 @@
 		</div>
 	{/each}
 </div>
-
-
-
