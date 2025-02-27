@@ -52,3 +52,19 @@ export async function updateUser(user: User) {
 		console.error('Error updating user:', error);
 	}
 }
+
+export async function deleteUser(userId: string) {
+	try {
+		const response = await fetch(`http://localhost:9090/api/deleteUser/${userId}`, {
+			method: 'DELETE'
+		});
+		const success = await response.json();
+		if (success) {
+			console.log('User deleted successfully');
+		} else {
+			console.error('Failed to delete user');
+		}
+	} catch (error) {
+		console.error('Error deleting user:', error);
+	}
+}

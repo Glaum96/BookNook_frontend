@@ -4,8 +4,8 @@
 	import { onMount } from 'svelte';
 	import type { Booking } from '../../types/Booking';
 	import { getDate, getTime } from '$lib/functions/dateFunctions.js';
-	import { fetchAllUsers } from '$lib/api/user';
-	import { fetchAllBookings } from '$lib/api/bookings';
+	import { deleteUser, fetchAllUsers } from '$lib/api/user';
+	import { deleteBooking, fetchAllBookings } from '$lib/api/bookings';
 
 	let users: User[] = [];
 	let bookings: Booking[] = [];
@@ -14,6 +14,16 @@
 		users = await fetchAllUsers();
 		bookings = await fetchAllBookings();
 	});
+
+	const handleDeleteBooking = async (bookingId: string) => {
+		await deleteBooking(bookingId);
+		bookings = await fetchAllBookings();
+	}
+
+	const handleDeleteUser = async (userId: string) => {
+		await deleteUser(userId);
+		users = await fetchAllUsers();
+	}
 
 </script>
 
@@ -42,7 +52,7 @@
 							<td>{user.email}</td>
 							<td>{user.apartmentNumber}</td>
 							<td>{user.id}</td>
-							<td><button class="delete-button">X</button></td>
+							<td><button class="delete-button" on:click={()=> handleDeleteUser(user.id)}>Slett</button></td>
 						</tr>
 					{/each}
 					</tbody>
@@ -68,7 +78,7 @@
 							<td>{getTime(booking.startTime)} - {getTime(booking.endTime)}</td>
 							<td>{booking.responsibleName}</td>
 							<td>{booking.responsibleNumber}</td>
-							<td><button class="delete-button">X</button></td>
+							<td class="button-container"><button class="delete-button" on:click={()=> handleDeleteBooking(booking.id)}>Slett</button></td>
 						</tr>
 					{/each}
 					</tbody>

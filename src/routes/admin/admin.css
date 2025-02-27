@@ -51,4 +51,11 @@ p {
     font-size: 1.1rem;
     float: right;
     font-weight: bold;
+    margin: 0 auto;
+    display: block;
+}
+
+.button-container{
+    display: flex;
+    justify-content: space-between;
 }
