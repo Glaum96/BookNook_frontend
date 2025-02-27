@@ -36,12 +36,6 @@ export async function fetchUser(userId: string) {
 	}
 }
 
-//TODO: Implement delete user
-/*
-export async function deleteUser(userId: string) {
-}
-*/
-
 export async function updateUser(user: User) {
 	try {
 		const token = getAuthToken()
@@ -61,6 +55,26 @@ export async function updateUser(user: User) {
 		}
 	} catch (error) {
 		console.error('Error updating user:', error)
+	}
+}
+
+export async function deleteUser(userId: string) {
+	try {
+		const token = getAuthToken()
+		const response = await fetch(`http://localhost:9090/api/deleteUser/${userId}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+
+		if (response.ok) {
+			console.log('User deleted successfully');
+		} else {
+			console.error('Failed to delete user');
+		}
+	} catch (error) {
+		console.error('Error deleting user:', error);
 	}
 }
 
