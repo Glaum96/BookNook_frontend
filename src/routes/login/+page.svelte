@@ -22,10 +22,10 @@
 				const data = await response.json()
 				localStorage.setItem('authToken', data['authToken'])
 				const userId = data['userId']
+				localStorage.setItem('userId', userId)
 				console.log('DATA', data['message'])
+				await addUserToLocalStorage(userId)
 				goto('/') // Redirect to the home page or another protected route
-
-				addUserToLocalStorage(userId)
 			} else {
 				errorMessage.set('Invalid username or password')
 			}
