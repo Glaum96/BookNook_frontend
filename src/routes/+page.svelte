@@ -67,7 +67,7 @@
 			responsibleNumber: responsibleNumber,
 		}
 		await postBooking(newBooking)
-		bookings = await fetchMyBookings('1001')
+		bookings = await fetchMyBookings(user.id)
 		resetForm()
 	}
 
