@@ -3,7 +3,6 @@
 	import { goto } from '$app/navigation'
 	import { addUserToLocalStorage } from '$lib/api/users'
 
-	let userId = '673f11a096afef5bf6502318' // TODO: Use the actual userId
 	let username = ''
 	let password = ''
 	let errorMessage = writable('')
@@ -22,10 +21,11 @@
 			if (response.ok) {
 				const data = await response.json()
 				localStorage.setItem('authToken', data['authToken'])
+				const userId = data['userId']
+				localStorage.setItem('userId', userId)
 				console.log('DATA', data['message'])
+				await addUserToLocalStorage(userId)
 				goto('/') // Redirect to the home page or another protected route
-
-				addUserToLocalStorage(userId)
 			} else {
 				errorMessage.set('Invalid username or password')
 			}
@@ -40,10 +40,10 @@
 		<h1>Login</h1>
 		<form on:submit|preventDefault={handleLogin}>
 			<div class="input-group">
-				<input type="text" bind:value={username} placeholder="Username" required />
+				<input type="text" bind:value={username} placeholder="Brukernavn (e-post)" required />
 			</div>
 			<div class="input-group">
-				<input type="password" bind:value={password} placeholder="Password" required />
+				<input type="password" bind:value={password} placeholder="Passord" required />
 			</div>
 			<button type="submit">Login</button>
 		</form>

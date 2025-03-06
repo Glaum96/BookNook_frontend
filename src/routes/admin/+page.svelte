@@ -3,17 +3,13 @@
 	import { onMount } from 'svelte'
 	import './admin.css'
 	import type { Booking } from '../../types/Booking'
+	import { globalOnMount } from '$lib/api/globalOnMount'
 	import { getDate, getTime } from '$lib/functions/dateFunctions.js'
-	import { goto } from '$app/navigation'
-	import { checkAuth, isAuthenticated } from '../../stores/auth'
 	import { deleteBooking, fetchAllBookings } from '$lib/api/bookings';
 	import { deleteUser, fetchAllUsers } from '$lib/api/users';
 
 	onMount(() => {
-		checkAuth()
-		if (!$isAuthenticated) {
-			goto('/login')
-		}
+		globalOnMount()
 	})
 
 	let users: User[] = []

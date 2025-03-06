@@ -22,15 +22,24 @@ export async function fetchAllUsers() {
 
 export async function fetchUser(userId: string) {
 	try {
-		const token = getAuthToken()
-		const response = await fetch(`http://localhost:9090/api/getUser/${userId}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`,
-			},
-		})
-		return await response.json()
+        const token = getAuthToken();
+        const response = await fetch(`http://localhost:9090/api/getUser/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        if (!text) {
+            throw new Error('Empty response body');
+        }
+        const user = JSON.parse(text);
+        console.log('User:', user);
+        return user;
 	} catch (error) {
 		console.log(error)
 	}

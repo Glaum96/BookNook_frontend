@@ -2,29 +2,32 @@
 	import MineBookinger from '$lib/components/mineBookinger.svelte'
 	import { onMount } from 'svelte'
 	import './page.css'
-	import { goto } from '$app/navigation'
-	import { checkAuth, isAuthenticated } from '../stores/auth'
+	import { globalOnMount } from '$lib/api/globalOnMount'
+	import { isAuthenticated } from '../stores/auth'
+	import type { User } from '../types/User'
 	import { fetchMyBookings, postBooking } from '$lib/api/bookings'
 	import type { Booking } from '../types/Booking'
 
-	onMount(() => {
-		checkAuth()
-		if (!$isAuthenticated) {
-			goto('/login')
-		}
+	onMount(async () => {
+		const{ user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
+		user = fetchedUser
+		bookings = fetchedBookings
 	})
+
+	let user = {
+		id: '',
+		name: '',
+		phoneNumber: '',
+		email: '',
+		apartmentNumber: '',
+	} as User
 
 	let bookings: Booking[] = []
 	let startTime = new Date().toISOString().slice(0, 16)
 	let endTime = new Date().toISOString().slice(0, 16)
 	let dateVariable = ''
-	let userId = '1001'
 	let responsibleName = ''
 	let responsibleNumber = ''
-
-	onMount(async () => {
-		bookings = await fetchMyBookings(userId)
-	})
 
 	function combineDateAndTime(dateVariable: string, startTime: string, endTime: string) {
 		const date = new Date(dateVariable)
@@ -55,10 +58,11 @@
 	async function handleSubmit() {
 		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime)
 		const newBooking = {
+			id: '', // ID is added in MongoDB Atlas
 			startTime: startDateTime,
 			endTime: endDateTime,
 			date: dateVariable,
-			userId: userId,
+			userId: user.id,
 			responsibleName: responsibleName,
 			responsibleNumber: responsibleNumber,
 		}
@@ -105,7 +109,7 @@
 			</form>
 		</section>
 		<section class="your-bookings">
-			<MineBookinger {userId} {bookings} />
+			<MineBookinger userId={user.id} {bookings} />
 		</section>
 	</div>
 {/if}

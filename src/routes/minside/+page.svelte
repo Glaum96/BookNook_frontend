@@ -3,34 +3,25 @@
 	import './minside.css'
 	import MineBookinger from '$lib/components/mineBookinger.svelte'
 	import { goto } from '$app/navigation'
-	import { checkAuth, isAuthenticated } from '../../stores/auth'
+	import type { User } from '../../types/User'
 	import { fetchMyBookings } from '$lib/api/bookings.js'
 	import type { Booking } from '../../types/Booking'
-	import { fetchUser, updateUser } from '$lib/api/users'
+	import { updateUser } from '$lib/api/users'
+	import { globalOnMount } from '$lib/api/globalOnMount'
 
 	onMount(async () => {
-		checkAuth()
-		if (!$isAuthenticated) {
-			goto('/login')
-		}
-		token = localStorage.getItem('authToken')
-		console.log('Min side mounted')
-
-		bookings = await fetchMyBookings(userIdBooking)
-		user = await fetchUser(userId)
+		const{ user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
+		user = fetchedUser
+		bookings = fetchedBookings
 	})
 
-	const userId = '673f11a096afef5bf6502318'
-	const userIdBooking = '1001'
-	let token: string | null = null
-
 	let user = {
-		id: userId,
+		id: '',
 		name: '',
 		phoneNumber: '',
 		email: '',
 		apartmentNumber: '',
-	}
+	} as User
 
 	let bookings: Booking[] = []
 
@@ -65,6 +56,6 @@
 		</form>
 	</section>
 	<section class="min-side-bookings">
-		<MineBookinger {userId} {bookings} />
+		<MineBookinger userId={user.id} {bookings} />
 	</section>
 </div>

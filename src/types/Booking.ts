@@ -1,5 +1,5 @@
 export interface Booking {
-	id?: string
+	id: string
 	startTime: string
 	endTime: string
 	userId: string
