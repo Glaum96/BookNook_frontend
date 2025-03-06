@@ -40,10 +40,10 @@
 		<h1>Login</h1>
 		<form on:submit|preventDefault={handleLogin}>
 			<div class="input-group">
-				<input type="text" bind:value={username} placeholder="Username" required />
+				<input type="text" bind:value={username} placeholder="Brukernavn (e-post)" required />
 			</div>
 			<div class="input-group">
-				<input type="password" bind:value={password} placeholder="Password" required />
+				<input type="password" bind:value={password} placeholder="Passord" required />
 			</div>
 			<button type="submit">Login</button>
 		</form>

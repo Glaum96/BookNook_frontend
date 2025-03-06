@@ -1,8 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte'
 
-	let id = ''
-	let username = ''
 	let password = ''
 	let name = ''
 	let email = ''
@@ -13,8 +11,6 @@
 
 	async function registerUser() {
 		const user = {
-			id,
-			username,
 			password,
 			name,
 			email,
@@ -46,31 +42,23 @@
 	<h1>Register</h1>
 	<form on:submit|preventDefault={registerUser}>
 		<label>
-			ID:
-			<input type="text" bind:value={id} required />
-		</label>
-		<label>
-			Username:
-			<input type="text" bind:value={username} required />
-		</label>
-		<label>
-			Password:
-			<input type="password" bind:value={password} required />
-		</label>
-		<label>
-			Name:
+			Fullt navn:
 			<input type="text" bind:value={name} required />
 		</label>
 		<label>
-			Email:
+			E-post:
 			<input type="email" bind:value={email} required />
 		</label>
 		<label>
-			Phone Number:
+			Passord:
+			<input type="password" bind:value={password} required />
+		</label>
+		<label>
+			Tlf-nummer:
 			<input type="tel" bind:value={phoneNumber} required />
 		</label>
 		<label>
-			Apartment Number:
+			Leilighetsnummer:
 			<input type="text" bind:value={apartmentNumber} required />
 		</label>
 		<button type="submit">Register</button>
