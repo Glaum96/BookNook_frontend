@@ -5,7 +5,6 @@
 	import { getUserFromLocalStorage } from '$lib/api/users'
 
 	const navigateTo = (url: string) => {
-		console.log('Navigating to:', url) // Debugging
 		goto(url)
 	}
 

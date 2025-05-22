@@ -85,7 +85,7 @@
 </script>
 
 <svelte:head>
-	<title>Takterrassen</title>
+	<title>BookNook</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
