@@ -3,8 +3,9 @@
 	import { goto } from '$app/navigation'
 	import { addUserToLocalStorage } from '$lib/api/users'
 
-	let username = ''
+	let userEmail = ''
 	let password = ''
+	let welcomeText = 'Velkommen til BookNook!'
 	let errorMessage = writable('')
 
 	async function handleLogin() {
@@ -14,7 +15,7 @@
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ username, password }),
+				body: JSON.stringify({ username: userEmail, password }),
 				credentials: 'include', // Include credentials if needed
 			})
 
@@ -33,14 +34,31 @@
 			errorMessage.set('An error occurred. Please try again.')
 		}
 	}
+
+	const updateWelcomeText = (e: Event) => {
+		userEmail = (e.target as HTMLInputElement).value
+
+		if (userEmail) {
+			const userEmailPrefix = userEmail.split('@')[0]
+			welcomeText = `Velkommen, ${userEmailPrefix}!`
+		} else {
+			welcomeText = 'Velkommen til BookNook!'
+		}
+	}
 </script>
 
 <div class="login-container">
 	<div class="login-card">
-		<h1>Login</h1>
+		<h1>{welcomeText}</h1>
 		<form on:submit|preventDefault={handleLogin}>
 			<div class="input-group">
-				<input type="text" bind:value={username} placeholder="Brukernavn (e-post)" required />
+				<input
+					type="text"
+					on:input={updateWelcomeText}
+					bind:value={userEmail}
+					placeholder="Brukernavn (e-post)"
+					required
+				/>
 			</div>
 			<div class="input-group">
 				<input type="password" bind:value={password} placeholder="Passord" required />
@@ -54,21 +72,11 @@
 </div>
 
 <style>
-	body {
-		font-family: 'Arial', sans-serif;
-		background: #f0f2f5;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 100vh;
-		margin: 0;
-	}
-
 	.login-container {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		height: 100vh;
+		flex-direction: column;
 	}
 
 	.login-card {
@@ -83,7 +91,10 @@
 
 	h1 {
 		margin-bottom: 1.5rem;
-		color: #333;
+		margin-top: 0;
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #525a8a;
 	}
 
 	.input-group {
@@ -92,7 +103,7 @@
 
 	input[type='text'],
 	input[type='password'] {
-		width: 100%;
+		width: 93.5%;
 		padding: 0.75rem;
 		border: 1px solid #ccc;
 		border-radius: 5px;
