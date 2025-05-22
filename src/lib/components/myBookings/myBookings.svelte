@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Booking } from '../../types/Booking'
+	import type { Booking } from '../../../types/Booking'
 	import './mineBookinger.css'
 	import { getDate, getTime } from '$lib/functions/dateFunctions'
 	import { fetchMyBookings, deleteBooking } from '$lib/api/bookings'
@@ -26,7 +26,7 @@
 			<p><strong>Telefonnummer: </strong> {booking.responsibleNumber}</p>
 			<button class="delete-button" on:click={() => handleDeleteBooking(booking.id)}>Slett booking</button>
 		</div>
-		{:else}
+	{:else}
 		<p class="no-bookings">Ingen bookinger funnet.</p>
 	{/each}
 </div>

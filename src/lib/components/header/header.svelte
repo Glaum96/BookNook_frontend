@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import { onMount } from 'svelte'
-	import { isAdminUser, isAuthenticated, logOut } from '../../stores/auth'
+	import { isAdminUser, isAuthenticated, logOut } from '../../../stores/auth'
 	import { getUserFromLocalStorage } from '$lib/api/users'
+	import './header.css'
 
 	const navigateTo = (url: string) => {
 		goto(url)
@@ -48,43 +49,3 @@
 		{/if}
 	</nav>
 </header>
-
-<style>
-	header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1rem;
-		background-color: white;
-	}
-
-	nav {
-		display: flex;
-		width: 100%;
-		justify-content: center;
-		align-items: center;
-	}
-
-	nav a:first-child {
-		margin-right: auto;
-		font-size: 1.5rem;
-		font-weight: bold;
-		color: #525a8a;
-	}
-
-	nav a,
-	nav button {
-		text-decoration: none;
-		font-size: 1rem;
-		font-weight: bold;
-		margin-right: 1.5rem;
-		color: #525a8a;
-		background: none;
-		border: none;
-		cursor: pointer;
-	}
-
-	nav button {
-		padding: 0;
-	}
-</style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MineBookinger from '$lib/components/mineBookinger.svelte'
+	import MineBookinger from '$lib/components/myBookings/myBookings.svelte'
 	import { onMount } from 'svelte'
 	import './page.css'
 	import { globalOnMount } from '$lib/api/globalOnMount'
