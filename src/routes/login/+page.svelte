@@ -24,7 +24,6 @@
 				localStorage.setItem('authToken', data['authToken'])
 				const userId = data['userId']
 				localStorage.setItem('userId', userId)
-				console.log('DATA', data['message'])
 				await addUserToLocalStorage(userId)
 				goto('/') // Redirect to the home page or another protected route
 			} else {

@@ -24,7 +24,7 @@ export function checkAdminUser() {
 
 export async function logOut() {
 	// Sends a post request to the logout end point in the backend and then redicrects to the login page
-	const response = await fetch('http://localhost:9090/api/logout', {
+	await fetch('http://localhost:9090/api/logout', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -36,6 +36,4 @@ export async function logOut() {
 	localStorage.removeItem('user')
 	localStorage.removeItem('userId')
 	isAuthenticated.set(false)
-
-	console.log(response)
 }

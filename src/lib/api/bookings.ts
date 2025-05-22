@@ -13,7 +13,6 @@ export async function fetchAllBookings() {
 				Authorization: `Bearer ${token}`,
 			},
 		})
-		console.log(response)
 		return await response.json()
 	} catch (error) {
 		console.log(error)

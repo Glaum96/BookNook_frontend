@@ -37,8 +37,7 @@ export async function fetchUser(userId: string) {
         if (!text) {
             throw new Error('Empty response body');
         }
-        const user = JSON.parse(text);
-        console.log('User:', user);
+        const user = JSON.parse(text)
         return user;
 	} catch (error) {
 		console.log(error)
@@ -89,7 +88,6 @@ export async function deleteUser(userId: string) {
 
 export const addUserToLocalStorage = async (userId: string) => {
 	const user = await fetchUser(userId)
-	console.log('user:', user)
 	localStorage.setItem('user', JSON.stringify(user))
 }
 
