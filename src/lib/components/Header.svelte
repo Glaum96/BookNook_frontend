@@ -39,7 +39,7 @@
 
 <header>
 	<nav>
-		<a href="/" on:click|preventDefault={() => navigateTo('/')}>Seilduksgata 6B</a>
+		<a href="/" on:click|preventDefault={() => navigateTo('/')}>BookNook</a>
 		{#if $isAuthenticated}
 			<a href="/minside" on:click|preventDefault={() => navigateTo('/minside')}>{getUserNameText(userName)}</a>
 			<a href="/admin" on:click|preventDefault={() => navigateTo('/admin')}>Admin</a>
