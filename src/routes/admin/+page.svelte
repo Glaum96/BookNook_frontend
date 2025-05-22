@@ -51,7 +51,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each users as user}
+				{#each users as user (user.id)}
 					<tr>
 						<td>{user.name}</td>
 						<td>{user.email}</td>
@@ -76,7 +76,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each bookings as booking}
+				{#each bookings as booking (booking.id)}
 					<tr>
 						<td>{getDate(booking.startTime)}</td>
 						<td>{getTime(booking.startTime)} - {getTime(booking.endTime)}</td>
