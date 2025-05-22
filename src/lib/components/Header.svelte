@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte'
 	import { isAuthenticated, logOut } from '../../stores/auth'
 	import type { User } from '../../types/User'
+	import { getUserFromLocalStorage } from '$lib/api/users'
 
 	const navigateTo = (url: string) => {
 		console.log('Navigating to:', url) // Debugging
@@ -29,11 +30,8 @@
 
 	let userName: string | null = null
 	onMount(() => {
-		const user = localStorage.getItem('user')
-		if (user) {
-			const userObj: User = JSON.parse(user)
-			userName = userObj.name
-		}
+		const user = getUserFromLocalStorage()
+		userName = user ? user.name : null
 	})
 </script>
 
