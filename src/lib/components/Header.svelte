@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import { onMount } from 'svelte'
-	import { isAuthenticated, logOut } from '../../stores/auth'
-	import type { User } from '../../types/User'
+	import { isAdminUser, isAuthenticated, logOut } from '../../stores/auth'
 	import { getUserFromLocalStorage } from '$lib/api/users'
 
 	const navigateTo = (url: string) => {
@@ -40,7 +39,9 @@
 		<a href="/" on:click|preventDefault={() => navigateTo('/')}>BookNook</a>
 		{#if $isAuthenticated}
 			<a href="/minside" on:click|preventDefault={() => navigateTo('/minside')}>{getUserNameText(userName)}</a>
-			<a href="/admin" on:click|preventDefault={() => navigateTo('/admin')}>Admin</a>
+			{#if $isAdminUser}
+				<a href="/admin" on:click|preventDefault={() => navigateTo('/admin')}>Admin</a>
+			{/if}
 			<button on:click={handleLogOut} class="nav-link">Logg ut</button>
 		{:else}
 			<a href="/register" on:click|preventDefault={() => navigateTo('/register')}>Registrer</a>

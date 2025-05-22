@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation'
-import { checkAuth, isAuthenticated, logOut } from '../../stores/auth'
+import { checkAdminUser, checkAuth, isAuthenticated, logOut } from '../../stores/auth'
 import type { Booking } from '../../types/Booking'
 import type { User } from '../../types/User'
 import { fetchMyBookings } from './bookings'
@@ -12,6 +12,7 @@ interface IGlobalOnMountResult {
 
 export const globalOnMount = async (): Promise<IGlobalOnMountResult> => {
 	checkAuth()
+	checkAdminUser()
 	if (!isAuthenticated) {
 		goto('/login')
 	}
