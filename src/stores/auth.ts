@@ -1,6 +1,8 @@
+import { getUserFromLocalStorage } from '$lib/api/users'
 import { writable } from 'svelte/store'
 
 export const isAuthenticated = writable(false)
+export const isAdminUser = writable(false)
 
 export function checkAuth() {
 	const token = localStorage.getItem('authToken')
@@ -13,6 +15,11 @@ export function redirectToLoginIfNotAuthenticated() {
 			window.location.href = '/login'
 		}
 	})
+}
+
+export function checkAdminUser() {
+	const userIsAdmin = getUserFromLocalStorage()?.admin
+	isAdminUser.set(!!userIsAdmin)
 }
 
 export async function logOut() {

@@ -4,4 +4,5 @@ export interface User {
 	phoneNumber: string
 	email: string
 	apartmentNumber: string
+	admin: boolean
 }
