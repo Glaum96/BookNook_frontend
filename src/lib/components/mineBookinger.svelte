@@ -26,5 +26,7 @@
 			<p><strong>Telefonnummer: </strong> {booking.responsibleNumber}</p>
 			<button class="delete-button" on:click={() => handleDeleteBooking(booking.id)}>Slett booking</button>
 		</div>
+		{:else}
+		<p class="no-bookings">Ingen bookinger funnet.</p>
 	{/each}
 </div>

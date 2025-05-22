@@ -59,6 +59,10 @@
 						<td>{user.id}</td>
 						<td class="button-container"><button class="delete-button" on:click={()=> handleDeleteUser(user.id)}>Slett</button></td>
 					</tr>
+					{:else}
+					<tr>
+						<td colspan="5" class="no-users">Ingen brukere funnet</td>
+					</tr>
 				{/each}
 			</tbody>
 		</table>
@@ -83,6 +87,10 @@
 						<td>{booking.responsibleName}</td>
 						<td>{booking.responsibleNumber}</td>
 						<td class="button-container"><button class="delete-button" on:click={()=> handleDeleteBooking(booking.id)}>Slett</button></td>
+					</tr>
+					{:else}
+					<tr>
+						<td colspan="5" class="no-bookings">Ingen bookinger funnet</td>
 					</tr>
 				{/each}
 			</tbody>
