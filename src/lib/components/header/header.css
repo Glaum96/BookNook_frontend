@@ -2,7 +2,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 1rem;
 		background-color: white;
 	}
 
@@ -38,4 +37,12 @@
 
 	nav button {
 		padding: 0;
+	}
+
+	img {
+		max-width: 100px; /* Set the maximum width for images */
+		max-height: 50px; /* Set the maximum height for images */
+		width: auto; /* Allow the image to scale proportionally */
+		height: auto; /* Allow the image to scale proportionally */
+		object-fit: contain; /* Ensure the image maintains its aspect ratio */
 	}
