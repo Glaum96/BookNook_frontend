@@ -36,7 +36,7 @@
 
 <header>
 	<nav>
-		<a href="/" on:click|preventDefault={() => navigateTo('/')}>BookNook</a>
+		<a class="title" href="/" on:click|preventDefault={() => navigateTo('/')}>BookNook</a>
 		{#if $isAuthenticated}
 			<a href="/minside" on:click|preventDefault={() => navigateTo('/minside')}>{getUserNameText(userName)}</a>
 			{#if $isAdminUser}

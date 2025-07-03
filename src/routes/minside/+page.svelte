@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import './minside.css'
-	import MineBookinger from '$lib/components/mineBookinger.svelte'
+	import MineBookinger from '$lib/components/myBookings/myBookings.svelte';
 	import type { User } from '../../types/User'
 	import type { Booking } from '../../types/Booking'
 	import { updateUser } from '$lib/api/users'

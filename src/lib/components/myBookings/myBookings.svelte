@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Booking } from '../../../types/Booking'
-	import './mineBookinger.css'
+	import './myBookings.css'
 	import { getDate, getTime } from '$lib/functions/dateFunctions'
 	import { fetchMyBookings, deleteBooking } from '$lib/api/bookings'
 
