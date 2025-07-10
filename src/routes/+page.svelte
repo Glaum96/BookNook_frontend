@@ -9,7 +9,7 @@
 	import type { Booking } from '../types/Booking'
 
 	onMount(async () => {
-		const{ user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
+		const { user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
 		user = fetchedUser
 		bookings = fetchedBookings
 	})
@@ -78,10 +78,6 @@
 		responsibleName = ''
 		responsibleNumber = ''
 	}
-
-	onMount(() => {
-		console.log('Min side mounted')
-	})
 </script>
 
 <svelte:head>
