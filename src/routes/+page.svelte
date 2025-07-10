@@ -7,6 +7,7 @@
 	import type { User } from '../types/User'
 	import { fetchMyBookings, postBooking } from '$lib/api/bookings'
 	import type { Booking } from '../types/Booking'
+	import Calendar from '$lib/components/calendar/calendar.svelte'
 
 	onMount(async () => {
 		const { user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
@@ -87,25 +88,31 @@
 
 {#if $isAuthenticated}
 	<div class="main-container">
-		<section class="booking">
-			<h3 class="header">Legg inn en booking</h3>
-			<form on:submit|preventDefault={handleSubmit}>
-				<p class="input-lable">Velg dato:</p>
-				<input type="date" bind:value={dateVariable} placeholder="Dato" />
-				<p class="input-lable">Velg start-tidspunkt:</p>
-				<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" />
-				<p class="input-lable">Velg slutt-tidspunkt:</p>
-				<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" />
-				<p class="input-lable">Hvem er ansvarlig for bookingen?</p>
-				<input type="text" bind:value={responsibleName} placeholder="Navn" />
-				<p class="input-lable">Oppgi ansvarlig sitt telefonnummer:</p>
-				<input type="text" bind:value={responsibleNumber} placeholder="Telefonnummer" />
-				<br />
-				<button type="submit" class="button">Opprett booking</button>
-			</form>
+		<section class="calendar-section">
+			<Calendar />
 		</section>
-		<section class="your-bookings">
-			<MineBookinger userId={user.id} {bookings} />
+		<section class="bookings-section">
+			<section class="new-booking">
+				<h3 class="header">Legg inn en booking</h3>
+				<form on:submit|preventDefault={handleSubmit}>
+					<p class="input-lable">Velg dato:</p>
+					<input type="date" bind:value={dateVariable} placeholder="Dato" />
+					<p class="input-lable">Velg start-tidspunkt:</p>
+					<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" />
+					<p class="input-lable">Velg slutt-tidspunkt:</p>
+					<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" />
+					<p class="input-lable">Hvem er ansvarlig for bookingen?</p>
+					<input type="text" bind:value={responsibleName} placeholder="Navn" />
+					<p class="input-lable">Oppgi ansvarlig sitt telefonnummer:</p>
+					<input type="text" bind:value={responsibleNumber} placeholder="Telefonnummer" />
+					<br />
+					<button type="submit" class="button">Opprett booking</button>
+				</form>
+			</section>
+			<section class="your-bookings">
+				<MineBookinger userId={user.id} {bookings} />
+			</section>
 		</section>
+		
 	</div>
 {/if}

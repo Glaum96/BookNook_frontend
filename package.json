@@ -34,5 +34,10 @@
     "vite": "^5.4.9",
     "vitest": "^2.0.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@schedule-x/calendar": "^2.36.0",
+    "@schedule-x/svelte": "^2.3.0",
+    "@schedule-x/theme-default": "^2.36.0"
+  }
 }
