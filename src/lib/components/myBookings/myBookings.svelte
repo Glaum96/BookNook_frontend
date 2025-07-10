@@ -18,7 +18,7 @@
 <div class="booking-cards">
 	<h3 class="header">Dine bookinger</h3>
 
-	{#each bookings as booking (booking.id)}
+	{#each bookings ?? [] as booking (booking.id)}
 		<div class="booking-card">
 			<p><strong>Dato: </strong> {getDate(booking.startTime)}</p>
 			<p><strong>Tidsperiode: </strong> {getTime(booking.startTime)} - {getTime(booking.endTime)}</p>
