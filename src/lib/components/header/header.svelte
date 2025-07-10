@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte'
 	import { isAdminUser, isAuthenticated, logOut } from '../../../stores/auth'
 	import { getUserFromLocalStorage } from '$lib/api/users'
+	import { showModal } from '../../../stores/modal'
 	import './header.css'
 
 	const navigateTo = (url: string) => {
@@ -32,6 +33,10 @@
 		const user = getUserFromLocalStorage()
 		userName = user ? user.name : null
 	})
+
+	const toggleModal = () => {
+		showModal.set(!$showModal)
+	}
 </script>
 
 <header>
@@ -39,6 +44,7 @@
 		<a class="title" href="/" on:click|preventDefault={() => navigateTo('/')}>
 			<img src="/booknook_full_logo.png" alt="BookNook Logo" />
 		</a>
+		<button id="toggleModalButton" on:click={toggleModal}>Toggle modal</button>
 		{#if $isAuthenticated}
 			<a href="/minside" on:click|preventDefault={() => navigateTo('/minside')}>{getUserNameText(userName)}</a>
 			{#if $isAdminUser}

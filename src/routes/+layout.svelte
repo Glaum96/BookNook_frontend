@@ -1,7 +1,9 @@
 <script>
 	import Header from '../lib/components/header/header.svelte'
 	import Footer from '../lib/components/footer/footer.svelte'
+	import Modal from '$lib/components/modal/modal.svelte'
 	import '../app.css'
+	import { showModal } from '../stores/modal'
 </script>
 
 <div class="app">
@@ -9,6 +11,9 @@
 
 	<main>
 		<slot />
+		{#if $showModal}
+			<Modal onClose={() => showModal.set(false)} />
+		{/if}
 	</main>
 	<Footer />
 </div>
@@ -31,4 +36,3 @@
 		box-sizing: border-box;
 	}
 </style>
-
