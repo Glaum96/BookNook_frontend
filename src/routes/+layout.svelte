@@ -1,9 +1,30 @@
-<script>
+<script lang="ts">
 	import Header from '../lib/components/header/header.svelte'
 	import Footer from '../lib/components/footer/footer.svelte'
 	import Modal from '$lib/components/modal/modal.svelte'
 	import '../app.css'
 	import { showModal } from '../stores/modal'
+	import type { User } from '../types/User'
+	import type { Booking } from '../types/Booking'
+	import { onMount } from 'svelte'
+	import { globalOnMount } from '$lib/api/globalOnMount'
+
+	let bookings: Booking[] = []
+
+	onMount(async () => {
+		const { user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
+		user = fetchedUser
+		bookings = fetchedBookings
+	})
+
+	let user = {
+		id: '',
+		name: '',
+		phoneNumber: '',
+		email: '',
+		apartmentNumber: '',
+	} as User
+
 </script>
 
 <div class="app">
@@ -12,7 +33,7 @@
 	<main>
 		<slot />
 		{#if $showModal}
-			<Modal onClose={() => showModal.set(false)} />
+			<Modal user={user} onClose={() => showModal.set(false)} />
 		{/if}
 	</main>
 	<Footer />
@@ -31,7 +52,7 @@
 		flex-direction: column;
 		padding: 1rem;
 		width: 100%;
-		max-width: 64rem;
+		/* max-width: 64rem; */
 		margin: 0 auto;
 		box-sizing: border-box;
 	}

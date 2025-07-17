@@ -1,16 +1,19 @@
 .main-container {
   display: flex;
   justify-content: center;
-  flex-direction: column;
-  gap: 2rem;
-  padding: 1rem;
+  flex-direction: row;
+  gap: 10px;
+  padding-top: 1rem;
   flex-wrap: nowrap;
 }
 
-.header {
-  color: #525a8a;
+.global-header {
+  position: sticky;
+  top: 0; /* Sticks to the top of the viewport */
+  z-index: 10; /* Ensure it stays above other content */
+  background-color: white; /* Add a background color to prevent content from showing through */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
 }
-
 .bookings-section{
   display: flex;
   flex-direction: row;
@@ -18,22 +21,30 @@
   height: 50%;
 }
 
-section.calendar-section {
+.calendar-section {
   min-width: 600px; /* Ensure it has a minimum width */
-  max-height: 500px;
   flex-grow: 1;
   overflow: auto; /* Allow scrolling if content overflows */
+  width: 70%;
 }
 
-section.new-booking,
-section.your-bookings {
+section.new-booking{
   display: flex;
   flex-direction: column;
   background-color: white;
   border-radius: 10px;
   padding: 1rem;
-  width: 70%;
+  width: 30%;
   min-width: 400px;
+}
+
+.your-bookings {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 10px;
+  width: 30%;
+  overflow: auto; /* Allow scrolling if content overflows */
 }
 
 .input-lable {

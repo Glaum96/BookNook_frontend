@@ -1,6 +1,9 @@
     footer {
+        position: sticky;
+        bottom: 0; /* Sticks to the bottom of the viewport */
+        z-index: 10; /* Ensure it stays above other content */
         color: #212529;
-        padding: 10px;
+        padding: 5px;
         text-align: center;
         font-size: 14px;
         border-top: 1px solid var(--footer-border-color, #dee2e6);

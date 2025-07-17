@@ -23,6 +23,22 @@
 		color: #525a8a;
 	}
 
+	#toggleModalButton { 
+		background-color: #9ad3a4;
+		color: rgb(25, 104, 22);
+		border: none;
+		margin: 0.5rem;
+		padding: 0.5rem;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		border-radius: 5px;
+		height: 36px;
+		font-size: 1.1rem;
+		font-weight: bold;
+	}
+
 	nav a,
 	nav button {
 		text-decoration: none;

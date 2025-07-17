@@ -39,12 +39,15 @@
 	}
 </script>
 
-<header>
+<header class="global-header">
 	<nav>
 		<a class="title" href="/" on:click|preventDefault={() => navigateTo('/')}>
 			<img src="/booknook_full_logo.png" alt="BookNook Logo" />
 		</a>
-		<button id="toggleModalButton" on:click={toggleModal}>Toggle modal</button>
+		<button id="toggleModalButton" on:click={toggleModal}>
+			<p>Ny booking</p>
+			<span class="icon">+</span>
+		</button>
 		{#if $isAuthenticated}
 			<a href="/minside" on:click|preventDefault={() => navigateTo('/minside')}>{getUserNameText(userName)}</a>
 			{#if $isAdminUser}
