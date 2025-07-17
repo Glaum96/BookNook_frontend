@@ -13,9 +13,10 @@ export async function fetchAllBookings() {
 				Authorization: `Bearer ${token}`,
 			},
 		})
-		return await response.json()
+		return (await (response ?? []).json()) as Booking[]
 	} catch (error) {
 		console.log(error)
+		throw new Error('Failed to fetch bookings')
 	}
 }
 
