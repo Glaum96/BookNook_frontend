@@ -1,5 +1,4 @@
 <script lang="ts">
-	import NewBooking from './newBooking.svelte'
 	import { onMount } from 'svelte'
 	import type { User } from '../../../types/User'
 	import { fetchMyBookings, postBooking } from '$lib/api/bookings'

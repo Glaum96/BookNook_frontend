@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
-	import { onMount } from 'svelte'
+	import { onMount, SvelteComponent } from 'svelte'
 	import { isAdminUser, isAuthenticated, logOut } from '../../../stores/auth'
 	import { getUserFromLocalStorage } from '$lib/api/users'
-	import { showModal } from '../../../stores/modal'
+	import { showModal, modalContent } from '../../../stores/modal'
 	import './header.css'
+	import NewBooking from '../newBooking/newBooking.svelte'
 
 	const navigateTo = (url: string) => {
 		goto(url)
@@ -36,6 +37,13 @@
 
 	const toggleModal = () => {
 		showModal.set(!$showModal)
+		modalContent.set({
+            component: NewBooking as typeof SvelteComponent,
+            props: {
+                onClose: () => showModal.set(false),
+                user: getUserFromLocalStorage(),
+            },
+        });
 	}
 </script>
 

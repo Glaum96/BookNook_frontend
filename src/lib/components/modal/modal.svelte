@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, SvelteComponent } from 'svelte';
 	import './modal.css'
 	
-	export let onClose: any
+	export let onClose: () => void;
+	export let component: typeof SvelteComponent | null = null; // The component to render
+    export let props: Record<string, any> = {}; // Props to pass to the component
 
 	function handleKeyDown(event: KeyboardEvent) {
         console.log('Keydown event:', event.key);
