@@ -8,6 +8,7 @@
 	import type { Booking } from '../types/Booking'
 	import { onMount } from 'svelte'
 	import { globalOnMount } from '$lib/api/globalOnMount'
+	import NewBooking from '$lib/components/newBooking/newBooking.svelte'
 
 	let bookings: Booking[] = []
 
@@ -33,7 +34,9 @@
 	<main>
 		<slot />
 		{#if $showModal}
-			<Modal user={user} onClose={() => showModal.set(false)} />
+			 <Modal onClose={() => showModal.set(false)}>
+				<NewBooking onClose={() => showModal.set(false)} {user} />
+			 </Modal>
 		{/if}
 	</main>
 	<Footer />
