@@ -23,6 +23,7 @@ section.min-side-user {
   background-color: white;
   border-radius: 10px;
   padding: 1rem;
+  flex: 1;
 }
 
 section.user {

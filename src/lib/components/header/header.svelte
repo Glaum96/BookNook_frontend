@@ -75,6 +75,6 @@
 			<a href="/register" on:click|preventDefault={() => navigateTo('/register')}>Registrer</a>
 			<a href="/login" on:click|preventDefault={() => navigateTo('/login')}>Logg inn</a>
 		{/if}
-		<img src="/info.png" alt="Info" on:click={toggleStaticInfoModal} />
+		<img id="info_img" src="/info.png" alt="Info" on:click={toggleStaticInfoModal} />
 	</nav>
 </header>

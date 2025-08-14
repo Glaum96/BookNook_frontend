@@ -26,13 +26,15 @@
 <div class="booking-cards">
 	<div class="my-bookings-header">
 		<h3 class="header">Dine bookinger</h3>
-		<label for="includePastBookings">Inkluder tidligere bookinger</label>
-		<input
-		type="checkbox"
-		id="includePastBookings"
-		bind:checked={$includePastBookings}
-		on:change={handleIncludePastBookingsChange}
-		/>
+		<div class="past-bookings">
+			<img src="/include_past.png" alt="Inkluder tidligere bookinger" />
+			<input
+			type="checkbox"
+			id="includePastBookingsCheckBox"
+			bind:checked={$includePastBookings}
+			on:change={handleIncludePastBookingsChange}
+			/>
+		</div>
 	</div>
 
 	{#each bookings ?? [] as booking (booking.id)}

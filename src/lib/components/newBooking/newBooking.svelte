@@ -16,26 +16,12 @@
 	let responsibleName = ''
 	let responsibleNumber = ''
 
-	function handleKeyDown(event: KeyboardEvent) {
-		console.log('Keydown event:', event.key)
-		if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-			console.log('Keydown triggered')
-			onClose() // Close the modal
-		}
-	}
-
 	onMount(() => {
-		document.addEventListener('keydown', handleKeyDown)
-
 		// Set active and focus on the modal content on mount so that no other DOM element can be activated by pressing space or enter
 		const modalContent = document.querySelector('.modal-content')
 		if (modalContent) {
 			modalContent.setAttribute('tabindex', '-1') // Make it focusable
 			;(modalContent as HTMLElement).focus()
-		}
-
-		return () => {
-			document.removeEventListener('keydown', handleKeyDown)
 		}
 	})
 
@@ -53,6 +39,7 @@
 		await postBooking(newBooking)
 		bookings = await fetchMyBookings(user.id, $includePastBookings)
 		resetForm()
+		onClose() // Close the modal after submitting
 	}
 
 	function combineDateAndTime(dateVariable: string, startTime: string, endTime: string) {
@@ -105,7 +92,7 @@
 			<p class="input-lable">Oppgi ansvarlig sitt telefonnummer:</p>
 			<input type="text" bind:value={responsibleNumber} placeholder="Telefonnummer" />
 			<br />
-			<button on:click={onClose} type="submit" class="button">Opprett booking</button>
+			<button type="submit" class="button">Opprett booking</button>
 		</form>
 	</div>
 </newBooking>

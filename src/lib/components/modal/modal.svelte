@@ -7,15 +7,12 @@
     export let props: Record<string, any> = {}; // Props to pass to the component
 
 	function handleKeyDown(event: KeyboardEvent) {
-        console.log('Keydown event:', event.key);
-        if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-            console.log('Keydown triggered');
+        if (event.key === 'Escape' || event.key === 'Enter') {
             onClose(); // Close the modal
         }
     }
 
 	function handleBackdropClick(event: MouseEvent) {
-		console.log('Backdrop clicked')
 		onClose()
 	}
 
