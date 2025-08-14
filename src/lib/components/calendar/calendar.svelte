@@ -13,6 +13,7 @@
 		getFormattedDateOfDayOneMonthFromToday,
 		getFormattedDateOfFirstDayOfPreviousMonth,
 		getTimeOfDayConstraints,
+		getViews,
 	} from './utils'
 	import { getBookings } from './getBookings'
 	import { onMount } from 'svelte'
@@ -34,11 +35,10 @@
 		},
 	]
 
-	const views: [any, ...any[]] = [createViewDay(), createViewWeek(), createViewMonthGrid(), createViewList()]
 	const darkMode = false
 
 	let calendarConfig = {
-		views: views,
+		views: getViews(),
 		locale: 'nb-NO',
 		isDark: darkMode,
 		defaultView: viewWeek.name,

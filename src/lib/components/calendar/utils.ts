@@ -1,3 +1,5 @@
+import { createViewDay, createViewWeek, createViewMonthGrid, createViewList } from "@schedule-x/calendar"
+
 export const getFormattedDateOfFirstDayOfPreviousMonth = () => {
 	const dateOfFirstDayOfPreviousMonth = new Date()
 	dateOfFirstDayOfPreviousMonth.setDate(1)
@@ -20,6 +22,19 @@ export const getTimeOfDayConstraints = (): TimeOfDayConstraints => ({
 	start: '06:00',
 	end: '23:00',
 })
+
+export const getViews = () => {
+	const views = [createViewDay(), createViewWeek(), createViewMonthGrid(), createViewList()]
+	if(!isNonEmptyArray(views)){
+		throw new Error('No views provided to the calendar')
+	} else {
+		return views
+	}
+}
+
+const isNonEmptyArray = <T>(arr: T[]): arr is [T, ...T[]] => {
+	return Array.isArray(arr) && arr.length > 0
+}
 
 type TimeOfDayConstraints = {
 	start: string
