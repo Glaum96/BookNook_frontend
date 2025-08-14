@@ -3,6 +3,7 @@
 	import type { User } from '../../../types/User'
 	import { fetchMyBookings, postBooking } from '$lib/api/bookings'
 	import type { Booking } from '../../../types/Booking'
+	import { includePastBookings } from '../../../stores/includePastBookings'
 
 	export let onClose: any
 	export let user: User
@@ -50,7 +51,7 @@
 			responsibleNumber: responsibleNumber,
 		}
 		await postBooking(newBooking)
-		bookings = await fetchMyBookings(user.id)
+		bookings = await fetchMyBookings(user.id, $includePastBookings)
 		resetForm()
 	}
 
@@ -87,7 +88,6 @@
 		responsibleName = ''
 		responsibleNumber = ''
 	}
-    console.log('user in newBooking:', user)
 </script>
 
 <newBooking {onClose} {user}>

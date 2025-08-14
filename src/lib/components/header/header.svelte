@@ -6,6 +6,7 @@
 	import { showModal, modalContent } from '../../../stores/modal'
 	import './header.css'
 	import NewBooking from '../newBooking/newBooking.svelte'
+	import StaticInfo from '../staticInfo/staticInfo.svelte'
 
 	const navigateTo = (url: string) => {
 		goto(url)
@@ -35,15 +36,23 @@
 		userName = user ? user.name : null
 	})
 
-	const toggleModal = () => {
+	const toggleNewBookingModal = () => {
 		showModal.set(!$showModal)
 		modalContent.set({
-            component: NewBooking as typeof SvelteComponent,
-            props: {
-                onClose: () => showModal.set(false),
-                user: getUserFromLocalStorage(),
-            },
-        });
+			component: NewBooking as typeof SvelteComponent,
+			props: {
+				onClose: () => showModal.set(false),
+				user: getUserFromLocalStorage(),
+			},
+		})
+	}
+
+	const toggleStaticInfoModal = () => {
+		showModal.set(!$showModal)
+		modalContent.set({
+			component: StaticInfo as typeof SvelteComponent,
+			props: {},
+		})
 	}
 </script>
 
@@ -52,7 +61,7 @@
 		<a class="title" href="/" on:click|preventDefault={() => navigateTo('/')}>
 			<img src="/booknook_full_logo.png" alt="BookNook Logo" />
 		</a>
-		<button id="toggleModalButton" on:click={toggleModal}>
+		<button id="toggleModalButton" on:click={toggleNewBookingModal}>
 			<p>Ny booking</p>
 			<span class="icon">+</span>
 		</button>
@@ -66,5 +75,6 @@
 			<a href="/register" on:click|preventDefault={() => navigateTo('/register')}>Registrer</a>
 			<a href="/login" on:click|preventDefault={() => navigateTo('/login')}>Logg inn</a>
 		{/if}
+		<img src="/info.png" alt="Info" on:click={toggleStaticInfoModal} />
 	</nav>
 </header>

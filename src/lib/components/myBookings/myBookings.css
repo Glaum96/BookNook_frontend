@@ -9,6 +9,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
+  flex-direction: column;
 }
 
 .booking-card {
@@ -19,6 +20,7 @@
   margin-right: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
+  align-items: center;
 }
 
 .delete-button {
@@ -31,4 +33,11 @@
   font-size: 1.1rem;
   float: right;
   font-weight: bold;
+}
+
+.my-bookings-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }

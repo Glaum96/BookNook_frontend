@@ -3,6 +3,7 @@
 	import './myBookings.css'
 	import { getDate, getTime } from '$lib/functions/dateFunctions'
 	import { fetchMyBookings, deleteBooking } from '$lib/api/bookings'
+	import { includePastBookings, setIncludePastBookings } from '../../../stores/includePastBookings';
 
 	export let userId: string
 	export let bookings: Booking[]
@@ -11,12 +12,28 @@
 		if (!bookingId) return
 
 		await deleteBooking(bookingId)
-		bookings = await fetchMyBookings(userId)
+		bookings = await fetchMyBookings(userId, $includePastBookings)
 	}
+
+	const handleIncludePastBookingsChange = async (event: Event) => {
+        const target = event.target as HTMLInputElement 
+        setIncludePastBookings(target.checked)
+        bookings = await fetchMyBookings(userId, $includePastBookings)
+    }
+
 </script>
 
 <div class="booking-cards">
-	<h3 class="header">Dine bookinger</h3>
+	<div class="my-bookings-header">
+		<h3 class="header">Dine bookinger</h3>
+		<label for="includePastBookings">Inkluder tidligere bookinger</label>
+		<input
+		type="checkbox"
+		id="includePastBookings"
+		bind:checked={$includePastBookings}
+		on:change={handleIncludePastBookingsChange}
+		/>
+	</div>
 
 	{#each bookings ?? [] as booking (booking.id)}
 		<div class="booking-card">

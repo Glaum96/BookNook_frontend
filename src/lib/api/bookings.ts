@@ -1,3 +1,4 @@
+import { getIncludePastBookingsFromLocalStorage, includePastBookings } from '../../stores/includePastBookings'
 import type { Booking } from '../../types/Booking'
 
 const getAuthToken = () => {
@@ -20,7 +21,7 @@ export async function fetchAllBookings() {
 	}
 }
 
-export async function fetchMyBookings(userId: string) {
+export async function fetchMyBookings(userId: string, includePastBookings: boolean) {
 	try {
 		const token = getAuthToken()
 		const response = await fetch('http://localhost:9090/api/myBookings', {
@@ -28,6 +29,7 @@ export async function fetchMyBookings(userId: string) {
 			headers: {
 				'Content-Type': 'application/json',
 				'User-Id': userId,
+				"includePastBookings": includePastBookings.toString(),
 				Authorization: `Bearer ${token}`,
 			},
 		})
@@ -69,7 +71,7 @@ export async function postBooking(newBooking: Booking) {
 			body: JSON.stringify(newBooking),
 		})
 		if (response.ok) {
-			await fetchMyBookings(newBooking.userId)
+			await fetchMyBookings(newBooking.userId, getIncludePastBookingsFromLocalStorage())
 			console.log('Booking created successfully')
 		}
 	} catch (error) {

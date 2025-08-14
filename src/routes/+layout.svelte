@@ -3,7 +3,7 @@
 	import Footer from '../lib/components/footer/footer.svelte'
 	import Modal from '$lib/components/modal/modal.svelte'
 	import '../app.css'
-	import { showModal } from '../stores/modal'
+	import { showModal, modalContent } from '../stores/modal'
 	import type { User } from '../types/User'
 	import type { Booking } from '../types/Booking'
 	import { onMount } from 'svelte'
@@ -18,6 +18,21 @@
 		bookings = fetchedBookings
 	})
 
+	// Handle body scrolling when modal is shown
+	onMount(() => {
+		const unsubscribe = showModal.subscribe((value) => {
+			if (value) {
+				document.body.style.overflow = 'hidden' // Disable scrolling
+			} else {
+				document.body.style.overflow = '' // Restore scrolling
+			}
+		})
+
+		return () => {
+			unsubscribe() // Cleanup subscription when component is destroyed
+		}
+	})
+
 	let user = {
 		id: '',
 		name: '',
@@ -25,7 +40,6 @@
 		email: '',
 		apartmentNumber: '',
 	} as User
-
 </script>
 
 <div class="app">
@@ -34,9 +48,11 @@
 	<main>
 		<slot />
 		{#if $showModal}
-			 <Modal onClose={() => showModal.set(false)}>
-				<NewBooking onClose={() => showModal.set(false)} {user} />
-			 </Modal>
+			<Modal onClose={() => showModal.set(false)}>
+				{#if $modalContent.component}
+					<svelte:component this={$modalContent.component} {...$modalContent.props} />
+				{/if}
+			</Modal>
 		{/if}
 	</main>
 	<Footer />

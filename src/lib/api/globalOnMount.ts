@@ -1,5 +1,6 @@
 import { goto } from '$app/navigation'
 import { checkAdminUser, checkAuth, isAuthenticated, logOut } from '../../stores/auth'
+import { checkIncludePastBookings, getIncludePastBookingsFromLocalStorage } from '../../stores/includePastBookings'
 import type { Booking } from '../../types/Booking'
 import type { User } from '../../types/User'
 import { fetchMyBookings } from './bookings'
@@ -13,11 +14,13 @@ interface IGlobalOnMountResult {
 export const globalOnMount = async (): Promise<IGlobalOnMountResult> => {
 	checkAuth()
 	checkAdminUser()
+	checkIncludePastBookings()
 	if (!isAuthenticated) {
 		goto('/login')
 	}
 	let userFromLocalStorage = getUserFromLocalStorage()
 	const userId = localStorage.getItem('userId')
+	const includePastBookings = getIncludePastBookingsFromLocalStorage()
 	if (!userFromLocalStorage || !userId) {
 		if (!userId) {
 			logOut()
@@ -33,14 +36,14 @@ export const globalOnMount = async (): Promise<IGlobalOnMountResult> => {
 			} else {
 				return {
 					user: userFromLocalStorage,
-					bookings: (await fetchMyBookings(userId)) as Booking[],
+					bookings: (await fetchMyBookings(userId, includePastBookings)) as Booking[],
 				}
 			}
 		}
 	} else {
 		return {
 			user: userFromLocalStorage,
-			bookings: (await fetchMyBookings(userId)) as Booking[],
+			bookings: (await fetchMyBookings(userId, includePastBookings)) as Booking[],
 		}
 	}
 }
