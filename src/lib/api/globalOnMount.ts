@@ -1,4 +1,5 @@
 import { goto } from '$app/navigation'
+import { base } from '$app/paths'
 import { checkAdminUser, checkAuth, isAuthenticated, logOut } from '../../stores/auth'
 import { checkIncludePastBookings, getIncludePastBookingsFromLocalStorage } from '../../stores/includePastBookings'
 import type { Booking } from '../../types/Booking'
@@ -16,7 +17,7 @@ export const globalOnMount = async (): Promise<IGlobalOnMountResult> => {
 	checkAdminUser()
 	checkIncludePastBookings()
 	if (!isAuthenticated) {
-		goto('/login')
+		goto(`${base}/login`)
 	}
 	let userFromLocalStorage = getUserFromLocalStorage()
 	const userId = localStorage.getItem('userId')
@@ -24,14 +25,14 @@ export const globalOnMount = async (): Promise<IGlobalOnMountResult> => {
 	if (!userFromLocalStorage || !userId) {
 		if (!userId) {
 			logOut()
-			goto('/login')
+			goto(`${base}/login`)
 			throw new Error('No user id found in local storage')
 		} else {
 			addUserToLocalStorage(userId)
 			userFromLocalStorage = getUserFromLocalStorage()
 			if (!userFromLocalStorage) {
 				logOut()
-				goto('/login')
+				goto(`${base}/login`)
 				throw new Error('No user found in local storage')
 			} else {
 				return {

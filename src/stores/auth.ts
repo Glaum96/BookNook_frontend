@@ -1,3 +1,4 @@
+import { base } from '$app/paths'
 import { getUserFromLocalStorage } from '$lib/api/users'
 import { writable } from 'svelte/store'
 
@@ -12,7 +13,7 @@ export function checkAuth() {
 export function redirectToLoginIfNotAuthenticated() {
 	isAuthenticated.subscribe((value) => {
 		if (!value) {
-			window.location.href = '/login'
+			window.location.href = `${base}/login`
 		}
 	})
 }

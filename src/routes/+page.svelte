@@ -7,6 +7,7 @@
 	import type { User } from '../types/User'
 	import type { Booking } from '../types/Booking'
 	import Calendar from '$lib/components/calendar/calendar.svelte'
+	import { base } from '$app/paths'
 
 	onMount(async () => {
 		const { user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
@@ -27,6 +28,7 @@
 
 <svelte:head>
 	<title>BookNook</title>
+	<a href="{base}">Home-test</a>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
