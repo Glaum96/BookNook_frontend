@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths'
 	import type { Booking } from '../../../types/Booking'
 	import './myBookings.css'
 	import { getDate, getTime } from '$lib/functions/dateFunctions'
@@ -27,7 +28,7 @@
 	<div class="my-bookings-header">
 		<h3 class="header">Dine bookinger</h3>
 		<div class="past-bookings">
-			<img src="/include_past.png" alt="Inkluder tidligere bookinger" />
+			<img src="{base}/include_past.png" alt="Inkluder tidligere bookinger" />
 			<input
 			type="checkbox"
 			id="includePastBookingsCheckBox"

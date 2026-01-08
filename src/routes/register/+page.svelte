@@ -29,7 +29,6 @@
 		if (response.ok) {
 			const result = await response.json()
 			dispatch('registerSuccess', result)
-			console.log('User registered successfully')
 		} else {
 			const error = await response.text()
 			dispatch('registerError', error)

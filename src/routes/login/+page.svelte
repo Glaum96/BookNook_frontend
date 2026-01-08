@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { writable } from 'svelte/store'
 	import { goto } from '$app/navigation'
+	import { base } from '$app/paths'
 	import { addUserToLocalStorage } from '$lib/api/users'
 
 	let userEmail = ''
@@ -25,7 +26,7 @@
 				const userId = data['userId']
 				localStorage.setItem('userId', userId)
 				await addUserToLocalStorage(userId)
-				goto('/') // Redirect to the home page or another protected route
+				goto(`${base}/`) // Redirect to the home page or another protected route
 			} else {
 				errorMessage.set('Invalid username or password')
 			}

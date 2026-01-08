@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
+	import { base } from '$app/paths'
 	import { onMount, SvelteComponent } from 'svelte'
 	import { isAdminUser, isAuthenticated, logOut } from '../../../stores/auth'
 	import { getUserFromLocalStorage } from '$lib/api/users'
@@ -7,15 +8,16 @@
 	import './header.css'
 	import NewBooking from '../newBooking/newBooking.svelte'
 	import StaticInfo from '../staticInfo/staticInfo.svelte'
+	//import '~@sb1/ffe-buttons/css/buttons.css'
 
 	const navigateTo = (url: string) => {
-		goto(url)
+		goto(`${base}${url}`)
 	}
 
 	// Function to handle logout
 	const handleLogOut = () => {
 		logOut()
-		navigateTo('/login')
+		navigateTo(`${base}/login`)
 	}
 
 	const getUserNameText = (userName: string | null) => {
@@ -58,23 +60,23 @@
 
 <header class="global-header">
 	<nav>
-		<a class="title" href="/" on:click|preventDefault={() => navigateTo('/')}>
-			<img src="/booknook_full_logo.png" alt="BookNook Logo" />
+		<a class="title" href="{base}/" on:click|preventDefault={() => navigateTo('/')}>
+			<img src="{base}/booknook_full_logo.png" alt="BookNook Logo" />
 		</a>
-		<button id="toggleModalButton" on:click={toggleNewBookingModal}>
-			<p>Ny booking</p>
-			<span class="icon">+</span>
-		</button>
 		{#if $isAuthenticated}
-			<a href="/minside" on:click|preventDefault={() => navigateTo('/minside')}>{getUserNameText(userName)}</a>
+			<button id="toggleModalButton" on:click={toggleNewBookingModal}>
+				<p>Ny booking</p>
+				<span class="icon">+</span>
+			</button>
+			<a href="{base}/minside" on:click|preventDefault={() => navigateTo('/minside')}>{getUserNameText(userName)}</a>
 			{#if $isAdminUser}
-				<a href="/admin" on:click|preventDefault={() => navigateTo('/admin')}>Admin</a>
+				<a href="{base}/admin" on:click|preventDefault={() => navigateTo('/admin')}>Admin</a>
 			{/if}
 			<button on:click={handleLogOut} class="nav-link">Logg ut</button>
 		{:else}
-			<a href="/register" on:click|preventDefault={() => navigateTo('/register')}>Registrer</a>
-			<a href="/login" on:click|preventDefault={() => navigateTo('/login')}>Logg inn</a>
+			<a href="{base}/register" on:click|preventDefault={() => navigateTo('/register')}>Registrer</a>
+			<a href="{base}{base}/login" on:click|preventDefault={() => navigateTo('{base}/login')}>Logg inn</a>
 		{/if}
-		<img id="info_img" src="/info.png" alt="Info" on:click={toggleStaticInfoModal} />
+		<img id="info_img" src="{base}/info.png" alt="Info" on:click={toggleStaticInfoModal} />
 	</nav>
 </header>
