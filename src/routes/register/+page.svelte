@@ -1,5 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte'
+	import { API_BASE_URL } from '$lib/config'
 
 	let password = ''
 	let name = ''
@@ -18,7 +19,7 @@
 			apartmentNumber,
 		}
 
-		const response = await fetch('http://localhost:9090/api/postUser', {
+		const response = await fetch(`${API_BASE_URL}/api/postUser`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import { getIncludePastBookingsFromLocalStorage, includePastBookings } from '../../stores/includePastBookings'
 import type { Booking } from '../../types/Booking'
+import { API_BASE_URL } from '$lib/config'
 
 const getAuthToken = () => {
 	return localStorage.getItem('authToken')
@@ -8,7 +9,7 @@ const getAuthToken = () => {
 export async function fetchAllBookings() {
 	try {
 		const token = getAuthToken()
-		const response = await fetch('http://localhost:9090/api/bookings', {
+		const response = await fetch(`${API_BASE_URL}/api/bookings`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`,
@@ -24,7 +25,7 @@ export async function fetchAllBookings() {
 export async function fetchMyBookings(userId: string, includePastBookings: boolean) {
 	try {
 		const token = getAuthToken()
-		const response = await fetch('http://localhost:9090/api/myBookings', {
+		const response = await fetch(`${API_BASE_URL}/api/myBookings`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -42,7 +43,7 @@ export async function fetchMyBookings(userId: string, includePastBookings: boole
 export async function deleteBooking(bookingId: string) {
 	try {
 		const token = getAuthToken()
-		const response = await fetch(`http://localhost:9090/api/deleteBooking/${bookingId}`, {
+		const response = await fetch(`${API_BASE_URL}/api/deleteBooking/${bookingId}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: `Bearer ${token}`,
@@ -62,7 +63,7 @@ export async function deleteBooking(bookingId: string) {
 export async function postBooking(newBooking: Booking) {
 	try {
 		const token = getAuthToken()
-		const response = await fetch('http://localhost:9090/api/postBooking', {
+		const response = await fetch(`${API_BASE_URL}/api/postBooking`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

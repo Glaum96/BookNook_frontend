@@ -1,4 +1,5 @@
 import type { User } from '../../types/User'
+import { API_BASE_URL } from '$lib/config'
 
 const getAuthToken = () => {
 	return localStorage.getItem('authToken')
@@ -7,7 +8,7 @@ const getAuthToken = () => {
 export async function fetchAllUsers() {
 	try {
 		const token = getAuthToken()
-		const response = await fetch('http://localhost:9090/api/getUsers', {
+		const response = await fetch(`${API_BASE_URL}/api/getUsers`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -23,7 +24,7 @@ export async function fetchAllUsers() {
 export async function fetchUser(userId: string) {
 	try {
         const token = getAuthToken();
-        const response = await fetch(`http://localhost:9090/api/getUser/${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/getUser/${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export async function fetchUser(userId: string) {
 export async function updateUser(user: User) {
 	try {
 		const token = getAuthToken()
-		const response = await fetch(`http://localhost:9090/api/users/${user.id}`, {
+		const response = await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -69,7 +70,7 @@ export async function updateUser(user: User) {
 export async function deleteUser(userId: string) {
 	try {
 		const token = getAuthToken()
-		const response = await fetch(`http://localhost:9090/api/deleteUser/${userId}`, {
+		const response = await fetch(`${API_BASE_URL}/api/deleteUser/${userId}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: `Bearer ${token}`,

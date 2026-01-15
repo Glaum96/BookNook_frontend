@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths'
+	import { pingApi } from '$lib/api/utils'
 	import './footer.css'
 
 	const handleFooterLinkClick = (link: string) => {
@@ -21,5 +22,16 @@
 		<button class="egg" title="Klikk meg daaaa... (du vet du vil)" on:click={() => handleFooterLinkClick('https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1')} >
 			<img src="{base}/footer/egg.png" alt="Klikk og finn ut..."/>
 		</button>
+		<button class="api-ping" on:click={async () => {
+			console.log('From backend: ', await pingApi())
+
+			const responseSpan = document.querySelector('.api-ping-response');
+			if (responseSpan) {
+				const response = await pingApi();
+				responseSpan.textContent = `Resonse from backend: ${response}`;
+			}
+			}}>Ping backend</button>
+		 <!-- Resonse from backend: -->
+		<span class="api-ping-response"></span>
 	</button-group>
 </footer>
