@@ -75,7 +75,7 @@
 			<button on:click={handleLogOut} class="nav-link">Logg ut</button>
 		{:else}
 			<a href="{base}/register" on:click|preventDefault={() => navigateTo('/register')}>Registrer</a>
-			<a href="{base}{base}/login" on:click|preventDefault={() => navigateTo('{base}/login')}>Logg inn</a>
+			<a href="{base}/login" on:click|preventDefault={() => navigateTo('/login')}>Logg inn</a>
 		{/if}
 		<img id="info_img" src="{base}/info.png" alt="Info" on:click={toggleStaticInfoModal} />
 	</nav>
