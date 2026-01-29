@@ -4,13 +4,18 @@
 	import { base } from '$app/paths'
 	import { addUserToLocalStorage } from '$lib/api/users'
 	import { API_BASE_URL } from '$lib/config'
+	import { isLoading, setLoading } from '../../stores/loading'
+	import Spinner from '$lib/components/spinner/Spinner.svelte'
 
 	let userEmail = ''
 	let password = ''
 	let welcomeText = 'Velkommen til BookNook!'
 	let errorMessage = writable('')
 
+	const loginLoading = isLoading('login')
+
 	async function handleLogin() {
+		setLoading('login', true)
 		try {
 			const response = await fetch(`${API_BASE_URL}/api/login`, {
 				method: 'POST',
@@ -33,6 +38,8 @@
 			}
 		} catch (error) {
 			errorMessage.set('An error occurred. Please try again.')
+		} finally {
+			setLoading('login', false)
 		}
 	}
 
@@ -59,12 +66,20 @@
 					bind:value={userEmail}
 					placeholder="Brukernavn (e-post)"
 					required
+					disabled={$loginLoading}
 				/>
 			</div>
 			<div class="input-group">
-				<input type="password" bind:value={password} placeholder="Passord" required />
+				<input type="password" bind:value={password} placeholder="Passord" required disabled={$loginLoading} />
 			</div>
-			<button type="submit">Login</button>
+			<button type="submit" disabled={$loginLoading}>
+				{#if $loginLoading}
+					<Spinner size="small" inline />
+					Logger inn...
+				{:else}
+					Login
+				{/if}
+			</button>
 		</form>
 		{#if $errorMessage}
 			<p class="error">{$errorMessage}</p>

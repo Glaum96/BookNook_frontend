@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import './minside.css'
-	import MineBookinger from '$lib/components/myBookings/myBookings.svelte';
+	import MineBookinger from '$lib/components/myBookings/myBookings.svelte'
 	import type { User } from '../../types/User'
 	import type { Booking } from '../../types/Booking'
 	import { updateUser } from '$lib/api/users'
 	import { globalOnMount } from '$lib/api/globalOnMount'
+	import { isLoading } from '../../stores/loading'
+	import Spinner from '$lib/components/spinner/Spinner.svelte'
+
+	const updateUserLoading = isLoading('updateUser')
 
 	onMount(async () => {
-		const{ user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
+		const { user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
 		user = fetchedUser
 		bookings = fetchedBookings
 	})
@@ -40,16 +44,23 @@
 		<form on:submit|preventDefault={handleSubmit}>
 			<div class="min-side-inputcolumn">
 				<p class="profile-input-label">Navn:</p>
-				<input bind:value={user.name} />
+				<input bind:value={user.name} disabled={$updateUserLoading} />
 				<p class="profile-input-label">Tlf:</p>
-				<input bind:value={user.phoneNumber} />
+				<input bind:value={user.phoneNumber} disabled={$updateUserLoading} />
 				<p class="profile-input-label">Epost:</p>
-				<input bind:value={user.email} />
+				<input bind:value={user.email} disabled={$updateUserLoading} />
 				<p class="profile-input-label">Leilighetsnummer:</p>
-				<input bind:value={user.apartmentNumber} />
+				<input bind:value={user.apartmentNumber} disabled={$updateUserLoading} />
 			</div>
 			<div class="inputcolumn">
-				<button type="submit" class="button">Lagre endringer</button>
+				<button type="submit" class="button" disabled={$updateUserLoading}>
+					{#if $updateUserLoading}
+						<Spinner size="small" inline />
+						Lagrer...
+					{:else}
+						Lagre endringer
+					{/if}
+				</button>
 			</div>
 		</form>
 	</section>

@@ -4,9 +4,13 @@
 	import { fetchMyBookings, postBooking } from '$lib/api/bookings'
 	import type { Booking } from '../../../types/Booking'
 	import { includePastBookings } from '../../../stores/includePastBookings'
+	import { isLoading } from '../../../stores/loading'
+	import Spinner from '../spinner/Spinner.svelte'
 
 	export let onClose: any
 	export let user: User
+
+	const postBookingLoading = isLoading('postBooking')
 
 	let bookings: Booking[] = []
 
@@ -82,17 +86,24 @@
 		<h3 class="header">Legg inn en booking</h3>
 		<form on:submit|preventDefault={handleSubmit}>
 			<p class="input-lable">Velg dato:</p>
-			<input type="date" bind:value={dateVariable} placeholder="Dato" />
+			<input type="date" bind:value={dateVariable} placeholder="Dato" disabled={$postBookingLoading} />
 			<p class="input-lable">Velg start-tidspunkt:</p>
-			<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" />
+			<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" disabled={$postBookingLoading} />
 			<p class="input-lable">Velg slutt-tidspunkt:</p>
-			<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" />
+			<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" disabled={$postBookingLoading} />
 			<p class="input-lable">Hvem er ansvarlig for bookingen?</p>
-			<input type="text" bind:value={responsibleName} placeholder="Navn" />
+			<input type="text" bind:value={responsibleName} placeholder="Navn" disabled={$postBookingLoading} />
 			<p class="input-lable">Oppgi ansvarlig sitt telefonnummer:</p>
-			<input type="text" bind:value={responsibleNumber} placeholder="Telefonnummer" />
+			<input type="text" bind:value={responsibleNumber} placeholder="Telefonnummer" disabled={$postBookingLoading} />
 			<br />
-			<button type="submit" class="button">Opprett booking</button>
+			<button type="submit" class="button" disabled={$postBookingLoading}>
+				{#if $postBookingLoading}
+					<Spinner size="small" inline />
+					Oppretter...
+				{:else}
+					Opprett booking
+				{/if}
+			</button>
 		</form>
 	</div>
 </newBooking>

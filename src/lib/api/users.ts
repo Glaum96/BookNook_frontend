@@ -1,4 +1,5 @@
 import type { User } from '../../types/User'
+import { setLoading } from '../../stores/loading'
 import { API_BASE_URL } from '$lib/config'
 
 const getAuthToken = () => {
@@ -6,6 +7,7 @@ const getAuthToken = () => {
 }
 
 export async function fetchAllUsers() {
+	setLoading('users', true)
 	try {
 		const token = getAuthToken()
 		const response = await fetch(`${API_BASE_URL}/api/getUsers`, {
@@ -18,6 +20,8 @@ export async function fetchAllUsers() {
 		return await response.json()
 	} catch (error) {
 		console.log(error)
+	} finally {
+		setLoading('users', false)
 	}
 }
 
@@ -46,6 +50,7 @@ export async function fetchUser(userId: string) {
 }
 
 export async function updateUser(user: User) {
+	setLoading('updateUser', true)
 	try {
 		const token = getAuthToken()
 		const response = await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
@@ -64,10 +69,13 @@ export async function updateUser(user: User) {
 		}
 	} catch (error) {
 		console.error('Error updating user:', error)
+	} finally {
+		setLoading('updateUser', false)
 	}
 }
 
 export async function deleteUser(userId: string) {
+	setLoading('deleteUser', true)
 	try {
 		const token = getAuthToken()
 		const response = await fetch(`${API_BASE_URL}/api/deleteUser/${userId}`, {
@@ -84,6 +92,8 @@ export async function deleteUser(userId: string) {
 		}
 	} catch (error) {
 		console.error('Error deleting user:', error);
+	} finally {
+		setLoading('deleteUser', false)
 	}
 }
 

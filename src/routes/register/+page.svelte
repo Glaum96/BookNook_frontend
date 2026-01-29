@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte'
 	import { API_BASE_URL } from '$lib/config'
+	import { isLoading, setLoading } from '../../stores/loading'
+	import Spinner from '$lib/components/spinner/Spinner.svelte'
 
 	let password = ''
 	let name = ''
@@ -9,31 +11,37 @@
 	let apartmentNumber = ''
 
 	const dispatch = createEventDispatcher()
+	const registerLoading = isLoading('register')
 
 	async function registerUser() {
-		const user = {
-			password,
-			name,
-			email,
-			phoneNumber,
-			apartmentNumber,
-		}
+		setLoading('register', true)
+		try {
+			const user = {
+				password,
+				name,
+				email,
+				phoneNumber,
+				apartmentNumber,
+			}
 
-		const response = await fetch(`${API_BASE_URL}/api/postUser`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(user),
-		})
+			const response = await fetch(`${API_BASE_URL}/api/postUser`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(user),
+			})
 
-		if (response.ok) {
-			const result = await response.json()
-			dispatch('registerSuccess', result)
-		} else {
-			const error = await response.text()
-			dispatch('registerError', error)
-			console.log('Error registering user:', JSON.parse(error))
+			if (response.ok) {
+				const result = await response.json()
+				dispatch('registerSuccess', result)
+			} else {
+				const error = await response.text()
+				dispatch('registerError', error)
+				console.log('Error registering user:', JSON.parse(error))
+			}
+		} finally {
+			setLoading('register', false)
 		}
 	}
 </script>
@@ -43,25 +51,32 @@
 	<form on:submit|preventDefault={registerUser}>
 		<label>
 			Fullt navn:
-			<input type="text" bind:value={name} required />
+			<input type="text" bind:value={name} required disabled={$registerLoading} />
 		</label>
 		<label>
 			E-post:
-			<input type="email" bind:value={email} required />
+			<input type="email" bind:value={email} required disabled={$registerLoading} />
 		</label>
 		<label>
 			Passord:
-			<input type="password" bind:value={password} required />
+			<input type="password" bind:value={password} required disabled={$registerLoading} />
 		</label>
 		<label>
 			Tlf-nummer:
-			<input type="tel" bind:value={phoneNumber} required />
+			<input type="tel" bind:value={phoneNumber} required disabled={$registerLoading} />
 		</label>
 		<label>
 			Leilighetsnummer:
-			<input type="text" bind:value={apartmentNumber} required />
+			<input type="text" bind:value={apartmentNumber} required disabled={$registerLoading} />
 		</label>
-		<button type="submit">Register</button>
+		<button type="submit" disabled={$registerLoading}>
+			{#if $registerLoading}
+				<Spinner size="small" inline />
+				Registrerer...
+			{:else}
+				Register
+			{/if}
+		</button>
 	</form>
 </main>
 

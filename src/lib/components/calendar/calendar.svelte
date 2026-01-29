@@ -18,8 +18,11 @@
 	import { getBookings } from './getBookings'
 	import { onMount } from 'svelte'
 	import type { ScheduleXEvent } from '../../../types/ScheduleXEvent'
+	import Spinner from '../spinner/Spinner.svelte'
+	import { isLoading } from '../../../stores/loading'
 
-	let isLoading = true
+	const calendarLoading = isLoading('bookings')
+	let initialLoadComplete = false
 	let bookings: ScheduleXEvent[] = [
 		{
 			id: '1',
@@ -69,20 +72,29 @@
 			calendarApp = createCalendar(calendarConfig)
 
 			// Mark loading as complete
-			isLoading = false
+			initialLoadComplete = true
 		} catch (error) {
 			console.error('Error fetching bookings:', error)
-			isLoading = false // Ensure loading state is cleared even on error
+			initialLoadComplete = true
 		}
 	})
 </script>
 
-{#if isLoading}
-	<!-- Show a loading indicator while fetching bookings -->
-	<div>Loading calendar...</div>
+{#if $calendarLoading || !initialLoadComplete}
+	<div class="loading-container">
+		<Spinner size="large" label="Laster kalender..." />
+	</div>
 {:else}
-	<!-- Render the calendar only after bookings are loaded -->
 	<div>
 		<ScheduleXCalendar {calendarApp} />
 	</div>
 {/if}
+
+<style>
+	.loading-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 400px;
+	}
+</style>

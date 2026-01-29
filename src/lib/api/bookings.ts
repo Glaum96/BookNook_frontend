@@ -1,4 +1,5 @@
 import { getIncludePastBookingsFromLocalStorage, includePastBookings } from '../../stores/includePastBookings'
+import { setLoading } from '../../stores/loading'
 import type { Booking } from '../../types/Booking'
 import { API_BASE_URL } from '$lib/config'
 
@@ -7,6 +8,7 @@ const getAuthToken = () => {
 }
 
 export async function fetchAllBookings() {
+	setLoading('bookings', true)
 	try {
 		const token = getAuthToken()
 		const response = await fetch(`${API_BASE_URL}/api/bookings`, {
@@ -19,10 +21,13 @@ export async function fetchAllBookings() {
 	} catch (error) {
 		console.log(error)
 		throw new Error('Failed to fetch bookings')
+	} finally {
+		setLoading('bookings', false)
 	}
 }
 
 export async function fetchMyBookings(userId: string, includePastBookings: boolean) {
+	setLoading('myBookings', true)
 	try {
 		const token = getAuthToken()
 		const response = await fetch(`${API_BASE_URL}/api/myBookings`, {
@@ -37,10 +42,13 @@ export async function fetchMyBookings(userId: string, includePastBookings: boole
 		return await response.json()
 	} catch (error) {
 		console.log(error)
+	} finally {
+		setLoading('myBookings', false)
 	}
 }
 
 export async function deleteBooking(bookingId: string) {
+	setLoading('deleteBooking', true)
 	try {
 		const token = getAuthToken()
 		const response = await fetch(`${API_BASE_URL}/api/deleteBooking/${bookingId}`, {
@@ -57,10 +65,13 @@ export async function deleteBooking(bookingId: string) {
 		}
 	} catch (error) {
 		console.log(error)
+	} finally {
+		setLoading('deleteBooking', false)
 	}
 }
 
 export async function postBooking(newBooking: Booking) {
+	setLoading('postBooking', true)
 	try {
 		const token = getAuthToken()
 		const response = await fetch(`${API_BASE_URL}/api/postBooking`, {
@@ -77,5 +88,7 @@ export async function postBooking(newBooking: Booking) {
 		}
 	} catch (error) {
 		console.log(error)
+	} finally {
+		setLoading('postBooking', false)
 	}
 }
