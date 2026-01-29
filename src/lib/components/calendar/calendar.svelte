@@ -97,4 +97,46 @@
 		align-items: center;
 		min-height: 400px;
 	}
+
+	/* ScheduleX event styling - must use :global() for library classes */
+	:global(.sx__time-grid-event) {
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+	}
+
+	:global(.booking-event) {
+		background-color: #002776 !important;
+		border-left: 4px solid #0056b3;
+	}
+
+	:global(.sx__time-grid-event-title) {
+		font-size: 0.95rem;
+		font-weight: 600;
+	}
+
+	:global(.sx__time-grid-event-people) {
+		font-size: 0.8rem;
+		opacity: 0.85;
+		margin-top: 2px;
+	}
+
+	:global(.sx__time-grid-event-location) {
+		font-size: 0.75rem;
+		opacity: 0.7;
+	}
+
+	/* Month grid events */
+	:global(.sx__month-grid-event) {
+		border-radius: 4px;
+	}
+
+	:global(.sx__month-grid-event.booking-event) {
+		background-color: #002776 !important;
+	}
+
+	/* Date grid events */
+	:global(.sx__date-grid-event.booking-event) {
+		background-color: #002776 !important;
+		border-radius: 4px;
+	}
 </style>

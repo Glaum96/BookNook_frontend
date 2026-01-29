@@ -18,20 +18,18 @@ export const getBookings = async (): Promise<ScheduleXEvent[]> => {
 		id: booking.id,
 		start: formatDate(booking.startTime),
 		end: formatDate(booking.endTime),
-		title: getBookingTitle(booking),
-		location: 'Takterrassen i Seilduken, bby',
-		people: [booking.userId],
+		title: booking.responsibleName,
+		description: `Tlf: ${booking.responsibleNumber}`,
+		location: 'Takterrassen',
+		people: [booking.responsibleName],
 		_options: {
-			disableDND: false,
-			disableResize: false,
+			disableDND: true,
+			disableResize: true,
+			additionalClasses: ['booking-event'],
 		},
 	}))
 
 	return bookingsResult
-}
-
-const getBookingTitle = (booking: Booking): string => {
-	return `${booking.responsibleName}: (${booking.startTime} - ${booking.endTime})`
 }
 
 const formatDate = (dateString: string): string => {
