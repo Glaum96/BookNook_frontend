@@ -70,7 +70,7 @@ export async function deleteBooking(bookingId: string) {
 	}
 }
 
-export async function postBooking(newBooking: Booking) {
+export async function postBooking(newBooking: Booking): Promise<{ success: boolean; errors?: string[] }> {
 	setLoading('postBooking', true)
 	try {
 		const token = getAuthToken()
@@ -84,10 +84,14 @@ export async function postBooking(newBooking: Booking) {
 		})
 		if (response.ok) {
 			await fetchMyBookings(newBooking.userId, getIncludePastBookingsFromLocalStorage())
-			console.log('Booking created successfully')
+			return { success: true }
+		} else {
+			const data = await response.json().catch(() => ({}))
+			return { success: false, errors: data.errors ?? ['Kunne ikke opprette booking. Prøv igjen.'] }
 		}
 	} catch (error) {
 		console.log(error)
+		return { success: false, errors: ['Kunne ikke koble til serveren. Prøv igjen.'] }
 	} finally {
 		setLoading('postBooking', false)
 	}

@@ -7,6 +7,7 @@
 	import { getDate, getTime } from '$lib/functions/dateFunctions.js'
 	import { deleteBooking, fetchAllBookings } from '$lib/api/bookings'
 	import { deleteUser, fetchAllUsers } from '$lib/api/users'
+	import { fetchRules, toggleRule, type Rule } from '$lib/api/rules'
 	import { isLoading } from '../../stores/loading'
 	import Spinner from '$lib/components/spinner/Spinner.svelte'
 
@@ -24,11 +25,19 @@
 
 	let users: User[] = []
 	let bookings: Booking[] = []
+	let rules: Rule[] = []
 
 	onMount(async () => {
 		bookings = await fetchAllBookings()
 		users = await fetchAllUsers()
+		rules = await fetchRules()
 	})
+
+	async function handleToggleRule(rule: Rule) {
+		const newEnabled = !rule.enabled
+		rules = rules.map((r) => (r.id === rule.id ? { ...r, enabled: newEnabled } : r))
+		await toggleRule(rule.id, newEnabled)
+	}
 
 	const handleDeleteBooking = async (bookingId: string) => {
 		deletingBookingId = bookingId
@@ -51,6 +60,21 @@
 </svelte:head>
 
 <div class="admin-container">
+	<section class="rules-panel">
+		<h3 class="admin-heading">Regler</h3>
+		{#each rules as rule (rule.id)}
+			<div class="rule-card">
+				<div class="rule-info">
+					<span class="rule-name">{rule.name}</span>
+					<span class="rule-description">{rule.description}</span>
+				</div>
+				<label class="toggle-switch">
+					<input type="checkbox" checked={rule.enabled} on:change={() => handleToggleRule(rule)} />
+					<span class="toggle-slider"></span>
+				</label>
+			</div>
+		{/each}
+	</section>
 	<section class="users-admin-panel">
 		<h3 class="admin-heading">Alle brukere:</h3>
 		{#if $usersLoading && users.length === 0}
@@ -152,5 +176,81 @@
 		display: flex;
 		justify-content: center;
 		padding: 2rem;
+	}
+
+	.rules-panel {
+		margin: 0 10px;
+		background-color: white;
+		padding: 32px;
+		border-radius: 10px;
+	}
+
+	.rule-card {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem;
+		border: 1px solid #eaf3ff;
+		border-radius: 8px;
+		margin-bottom: 0.75rem;
+	}
+
+	.rule-info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.rule-name {
+		font-weight: 600;
+		color: #1c1b1f;
+	}
+
+	.rule-description {
+		font-size: 0.85rem;
+		color: #555;
+	}
+
+	.toggle-switch {
+		position: relative;
+		display: inline-block;
+		width: 48px;
+		height: 26px;
+		flex-shrink: 0;
+	}
+
+	.toggle-switch input {
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	.toggle-slider {
+		position: absolute;
+		cursor: pointer;
+		inset: 0;
+		background-color: #ccc;
+		border-radius: 26px;
+		transition: background-color 0.2s;
+	}
+
+	.toggle-slider::before {
+		content: '';
+		position: absolute;
+		height: 20px;
+		width: 20px;
+		left: 3px;
+		bottom: 3px;
+		background-color: white;
+		border-radius: 50%;
+		transition: transform 0.2s;
+	}
+
+	.toggle-switch input:checked + .toggle-slider {
+		background-color: #525a8a;
+	}
+
+	.toggle-switch input:checked + .toggle-slider::before {
+		transform: translateX(22px);
 	}
 </style>

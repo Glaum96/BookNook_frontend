@@ -33,6 +33,7 @@
 	let endDateTime = getInitialEnd()
 	let responsibleName = user.name ?? ''
 	let responsibleNumber = user.phoneNumber ?? ''
+	let ruleErrors: string[] = []
 
 	$: endBeforeStart = startDateTime && endDateTime && endDateTime <= startDateTime
 
@@ -47,6 +48,7 @@
 	async function handleSubmit() {
 		if (endBeforeStart) return
 
+		ruleErrors = []
 		const newBooking: Booking = {
 			id: '',
 			startTime: new Date(startDateTime).toISOString(),
@@ -55,7 +57,11 @@
 			responsibleName,
 			responsibleNumber,
 		}
-		await postBooking(newBooking)
+		const result = await postBooking(newBooking)
+		if (!result.success) {
+			ruleErrors = result.errors ?? []
+			return
+		}
 		await fetchMyBookings(user.id, $includePastBookings)
 		onClose()
 	}
@@ -83,6 +89,13 @@
 			<label for="responsibleNumber">Telefonnummer</label>
 			<input id="responsibleNumber" type="tel" bind:value={responsibleNumber} placeholder="99887766" required disabled={$postBookingLoading} />
 		</div>
+		{#if ruleErrors.length > 0}
+			<ul class="error-list">
+				{#each ruleErrors as error}
+					<li>{error}</li>
+				{/each}
+			</ul>
+		{/if}
 		<button type="submit" disabled={$postBookingLoading || !!endBeforeStart}>
 			{#if $postBookingLoading}
 				<Spinner size="small" inline />
@@ -161,5 +174,20 @@
 	button:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
+	}
+
+	.error-list {
+		list-style: none;
+		padding: 0.75rem 1rem;
+		margin: 0 0 1rem;
+		background: #fff0f0;
+		border: 1px solid #ffcccc;
+		border-radius: 5px;
+		color: #cc0000;
+		font-size: 0.9rem;
+	}
+
+	.error-list li + li {
+		margin-top: 0.25rem;
 	}
 </style>
