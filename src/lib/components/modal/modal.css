@@ -25,7 +25,7 @@
     transform: translate(-50%, -50%); /* Center the modal */
     padding: 20px;
     border-radius: 10px;
-    max-width: 400px;
+    max-width: 560px;
     width: 90%; /* Ensure responsiveness */
     background: white;
     text-align: center;

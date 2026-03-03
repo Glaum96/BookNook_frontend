@@ -18,6 +18,7 @@ export async function fetchRules(): Promise<Rule[]> {
 			Authorization: `Bearer ${token}`,
 		},
 	})
+	if (!response.ok) return []
 	return response.json()
 }
 
