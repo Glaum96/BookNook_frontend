@@ -13,11 +13,13 @@
 	let password = ''
 	let passwordConfirm = ''
 	let backendErrors: string[] = []
+	let emailExists: boolean | null = null
+	let checkingEmail = false
 
 	const registerLoading = isLoading('register')
 
 	const errorTranslations: Record<string, string> = {
-		'Email already exists': 'E-postadressen er allerede registrert',
+		'Email address is already registered': 'E-postadressen er allerede registrert',
 		'Email is required': 'E-post er påkrevd',
 		'Password is required': 'Passord er påkrevd',
 		'Name is required': 'Navn er påkrevd',
@@ -46,8 +48,22 @@
 	$: passwordValid = Object.values(passwordChecks).every(Boolean)
 	$: passwordsMatch = password === passwordConfirm
 
+	async function handleEmailBlur() {
+		if (!email) return
+		checkingEmail = true
+		emailExists = null
+		try {
+			const res = await fetch(`${API_BASE_URL}/api/checkEmail?email=${encodeURIComponent(email)}`)
+			emailExists = res.status === 409
+		} catch {
+			// ignore network errors here — backend will catch it on submit
+		} finally {
+			checkingEmail = false
+		}
+	}
+
 	async function registerUser() {
-		if (!passwordValid || !passwordsMatch) return
+		if (!passwordValid || !passwordsMatch || emailExists) return
 
 		backendErrors = []
 		setLoading('register', true)
@@ -74,7 +90,9 @@
 			} else {
 				try {
 					const errorData = await response.json()
-					if (Array.isArray(errorData)) {
+					if (Array.isArray(errorData?.errors)) {
+						backendErrors = errorData.errors.map(translateError)
+					} else if (Array.isArray(errorData)) {
 						backendErrors = errorData.map(translateError)
 					} else if (typeof errorData === 'string') {
 						backendErrors = [translateError(errorData)]
@@ -105,7 +123,12 @@
 			</div>
 			<div class="input-group">
 				<label for="email">E-post</label>
-				<input id="email" type="email" bind:value={email} placeholder="ola@example.com" required disabled={$registerLoading} />
+				<input id="email" type="email" bind:value={email} on:blur={handleEmailBlur} placeholder="ola@example.com" required disabled={$registerLoading} />
+				{#if checkingEmail}
+					<p class="field-info">Sjekker e-post...</p>
+				{:else if emailExists === true}
+					<p class="field-error">E-postadressen er allerede registrert</p>
+				{/if}
 			</div>
 			<div class="input-group">
 				<label for="phoneNumber">Telefonnummer</label>
@@ -233,6 +256,12 @@
 		margin: 0.25rem 0 0;
 		font-size: 0.85rem;
 		color: #cc0000;
+	}
+
+	.field-info {
+		margin: 0.25rem 0 0;
+		font-size: 0.85rem;
+		color: #888;
 	}
 
 	.error-list {
