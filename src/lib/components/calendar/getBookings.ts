@@ -21,7 +21,6 @@ export const getBookings = async (): Promise<ScheduleXEvent[]> => {
 		title: booking.responsibleName,
 		description: `Tlf: ${booking.responsibleNumber}`,
 		location: 'Takterrassen',
-		people: [booking.responsibleName],
 		_options: {
 			disableDND: true,
 			disableResize: true,

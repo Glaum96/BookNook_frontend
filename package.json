@@ -43,6 +43,7 @@
     "@sb1/ffe-buttons": "^22.0.1",
     "@sb1/ffe-core": "^33.0.0",
     "@schedule-x/calendar": "^2.36.0",
+    "@schedule-x/scroll-controller": "^4.2.0",
     "@schedule-x/svelte": "^2.3.0",
     "@schedule-x/theme-default": "^2.36.0"
   }

@@ -9,6 +9,7 @@
 		viewWeek,
 	} from '@schedule-x/calendar'
 	import '@schedule-x/theme-default/dist/index.css'
+	import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 	import {
 		getFormattedDateOfDayOneMonthFromToday,
 		getFormattedDateOfFirstDayOfPreviousMonth,
@@ -23,27 +24,17 @@
 
 	const calendarLoading = isLoading('bookings')
 	let initialLoadComplete = false
-	let bookings: ScheduleXEvent[] = [
-		{
-			id: '1',
-			title: 'Event 1',
-			start: '2025-07-17',
-			end: '2025-07-17',
-		},
-		{
-			id: '2',
-			title: 'Event 2',
-			start: '2025-07-18 15:00',
-			end: '2025-07-18 18:00',
-		},
-	]
+	let bookings: ScheduleXEvent[] = []
 
-	const darkMode = false
+	const now = new Date()
+	const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 
-	let calendarConfig = {
+	const scrollController = createScrollControllerPlugin({ initialScroll: currentTime })
+
+	const calendarConfig = {
 		views: getViews(),
 		locale: 'nb-NO',
-		isDark: darkMode,
+		isDark: false,
 		defaultView: viewWeek.name,
 		showWeekNumbers: true,
 		dayBoundaries: getTimeOfDayConstraints(),
@@ -54,6 +45,7 @@
 			nDays: 7,
 			eventOverlap: false,
 		},
+		plugins: [scrollController],
 		events: bookings,
 	}
 
@@ -61,17 +53,10 @@
 
 	onMount(async () => {
 		try {
-			// Fetch bookings from the server
 			const bookingsFromServer = await getBookings()
-			bookings = [...bookings, ...bookingsFromServer]
+			bookings = bookingsFromServer
 
-			// Update calendar config with fetched bookings
-			calendarConfig = { ...calendarConfig, events: bookings }
-
-			// Create the calendar instance
-			calendarApp = createCalendar(calendarConfig)
-
-			// Mark loading as complete
+			calendarApp = createCalendar({ ...calendarConfig, events: bookings })
 			initialLoadComplete = true
 		} catch (error) {
 			console.error('Error fetching bookings:', error)
@@ -85,7 +70,7 @@
 		<Spinner size="large" label="Laster kalender..." />
 	</div>
 {:else}
-	<div>
+	<div class="calendar-wrapper">
 		<ScheduleXCalendar {calendarApp} />
 	</div>
 {/if}
@@ -98,45 +83,57 @@
 		min-height: 400px;
 	}
 
-	/* ScheduleX event styling - must use :global() for library classes */
+	/* Override brand color for calendar chrome (today highlight, selected date, etc.) */
+	.calendar-wrapper :global(.sx__calendar-wrapper) {
+		--sx-color-primary: #525a8a;
+		--sx-color-on-primary: #fff;
+		--sx-color-primary-container: #e8eaf6;
+		--sx-color-on-primary-container: #1a1f4b;
+	}
+
+	/* Event pill styling */
 	:global(.sx__time-grid-event) {
-		border-radius: 8px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+		border-radius: 6px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
 	}
 
 	:global(.booking-event) {
-		background-color: #002776 !important;
-		border-left: 4px solid #0056b3;
+		background-color: #525a8a !important;
+		border-left: 4px solid #3a4169 !important;
+		color: #fff !important;
+	}
+
+	:global(.booking-event *) {
+		color: #fff !important;
 	}
 
 	:global(.sx__time-grid-event-title) {
-		font-size: 0.95rem;
+		font-size: 0.9rem;
 		font-weight: 600;
 	}
 
-	:global(.sx__time-grid-event-people) {
+	:global(.sx__time-grid-event-description) {
 		font-size: 0.8rem;
-		opacity: 0.85;
+		opacity: 0.9;
 		margin-top: 2px;
 	}
 
 	:global(.sx__time-grid-event-location) {
 		font-size: 0.75rem;
-		opacity: 0.7;
+		opacity: 0.75;
 	}
 
 	/* Month grid events */
-	:global(.sx__month-grid-event) {
+	:global(.sx__month-grid-event.booking-event) {
+		background-color: #525a8a !important;
+		color: #fff !important;
 		border-radius: 4px;
 	}
 
-	:global(.sx__month-grid-event.booking-event) {
-		background-color: #002776 !important;
-	}
-
-	/* Date grid events */
+	/* Date/list grid events */
 	:global(.sx__date-grid-event.booking-event) {
-		background-color: #002776 !important;
+		background-color: #525a8a !important;
+		color: #fff !important;
 		border-radius: 4px;
 	}
 </style>
