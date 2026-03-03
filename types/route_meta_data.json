@@ -1,0 +1,19 @@
+{
+	"/": [
+		"src/routes/+page.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/admin": [
+		"src/routes/+layout.ts"
+	],
+	"/login": [
+		"src/routes/+layout.ts"
+	],
+	"/minside": [
+		"src/routes/+layout.ts"
+	],
+	"/register": [
+		"src/routes/+layout.ts"
+	]
+}
