@@ -7,104 +7,159 @@
 	import { isLoading } from '../../../stores/loading'
 	import Spinner from '../spinner/Spinner.svelte'
 
-	export let onClose: any
+	export let onClose: () => void
 	export let user: User
 
 	const postBookingLoading = isLoading('postBooking')
 
-	let bookings: Booking[] = []
+	function formatLocalDatetime(date: Date): string {
+		const pad = (n: number) => String(n).padStart(2, '0')
+		return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:00`
+	}
 
-	let startTime = new Date().toISOString().slice(0, 16)
-	let endTime = new Date().toISOString().slice(0, 16)
-	let dateVariable = ''
-	let responsibleName = ''
-	let responsibleNumber = ''
+	function getInitialStart(): string {
+		const d = new Date()
+		d.setHours(d.getHours() + 1, 0, 0, 0)
+		return formatLocalDatetime(d)
+	}
+
+	function getInitialEnd(): string {
+		const d = new Date()
+		d.setHours(d.getHours() + 3, 0, 0, 0)
+		return formatLocalDatetime(d)
+	}
+
+	let startDateTime = getInitialStart()
+	let endDateTime = getInitialEnd()
+	let responsibleName = user.name ?? ''
+	let responsibleNumber = user.phoneNumber ?? ''
+
+	$: endBeforeStart = startDateTime && endDateTime && endDateTime <= startDateTime
 
 	onMount(() => {
-		// Set active and focus on the modal content on mount so that no other DOM element can be activated by pressing space or enter
 		const modalContent = document.querySelector('.modal-content')
 		if (modalContent) {
-			modalContent.setAttribute('tabindex', '-1') // Make it focusable
+			modalContent.setAttribute('tabindex', '-1')
 			;(modalContent as HTMLElement).focus()
 		}
 	})
 
 	async function handleSubmit() {
-		const { startDateTime, endDateTime } = combineDateAndTime(dateVariable, startTime, endTime)
-		const newBooking = {
-			id: '', // ID is added in MongoDB Atlas
-			startTime: startDateTime,
-			endTime: endDateTime,
-			date: dateVariable,
+		if (endBeforeStart) return
+
+		const newBooking: Booking = {
+			id: '',
+			startTime: new Date(startDateTime).toISOString(),
+			endTime: new Date(endDateTime).toISOString(),
 			userId: user.id,
-			responsibleName: responsibleName,
-			responsibleNumber: responsibleNumber,
+			responsibleName,
+			responsibleNumber,
 		}
 		await postBooking(newBooking)
-		bookings = await fetchMyBookings(user.id, $includePastBookings)
-		resetForm()
-		onClose() // Close the modal after submitting
-	}
-
-	function combineDateAndTime(dateVariable: string, startTime: string, endTime: string) {
-		const date = new Date(dateVariable)
-		const [startHours, startMinutes] = startTime.split(':')
-		const [endHours, endMinutes] = endTime.split(':')
-
-		const startDateTime = new Date(
-			date.getFullYear(),
-			date.getMonth(),
-			date.getDate(),
-			Number(startHours),
-			Number(startMinutes)
-		)
-		const endDateTime = new Date(
-			date.getFullYear(),
-			date.getMonth(),
-			date.getDate(),
-			Number(endHours),
-			Number(endMinutes)
-		)
-
-		return {
-			startDateTime: startDateTime.toISOString(),
-			endDateTime: endDateTime.toISOString(),
-		}
-	}
-
-	const resetForm = () => {
-		startTime = new Date().toISOString().slice(0, 16)
-		endTime = new Date().toISOString().slice(0, 16)
-		dateVariable = ''
-		responsibleName = ''
-		responsibleNumber = ''
+		await fetchMyBookings(user.id, $includePastBookings)
+		onClose()
 	}
 </script>
 
-<newBooking {onClose} {user}>
-	<div class="new-booking">
-		<h3 class="header">Legg inn en booking</h3>
-		<form on:submit|preventDefault={handleSubmit}>
-			<p class="input-lable">Velg dato:</p>
-			<input type="date" bind:value={dateVariable} placeholder="Dato" disabled={$postBookingLoading} />
-			<p class="input-lable">Velg start-tidspunkt:</p>
-			<input type="time" bind:value={startTime} placeholder="Start-tidspunkt" disabled={$postBookingLoading} />
-			<p class="input-lable">Velg slutt-tidspunkt:</p>
-			<input type="time" bind:value={endTime} placeholder="Slutt-tidspunkt" disabled={$postBookingLoading} />
-			<p class="input-lable">Hvem er ansvarlig for bookingen?</p>
-			<input type="text" bind:value={responsibleName} placeholder="Navn" disabled={$postBookingLoading} />
-			<p class="input-lable">Oppgi ansvarlig sitt telefonnummer:</p>
-			<input type="text" bind:value={responsibleNumber} placeholder="Telefonnummer" disabled={$postBookingLoading} />
-			<br />
-			<button type="submit" class="button" disabled={$postBookingLoading}>
-				{#if $postBookingLoading}
-					<Spinner size="small" inline />
-					Oppretter...
-				{:else}
-					Opprett booking
-				{/if}
-			</button>
-		</form>
-	</div>
-</newBooking>
+<div class="new-booking">
+	<h3 class="title">Legg inn booking</h3>
+	<form on:submit|preventDefault={handleSubmit}>
+		<div class="input-group">
+			<label for="startDateTime">Fra</label>
+			<input id="startDateTime" type="datetime-local" bind:value={startDateTime} required disabled={$postBookingLoading} />
+		</div>
+		<div class="input-group">
+			<label for="endDateTime">Til</label>
+			<input id="endDateTime" type="datetime-local" bind:value={endDateTime} required disabled={$postBookingLoading} />
+			{#if endBeforeStart}
+				<p class="field-error">Sluttidspunkt må være etter starttidspunkt</p>
+			{/if}
+		</div>
+		<div class="input-group">
+			<label for="responsibleName">Ansvarlig</label>
+			<input id="responsibleName" type="text" bind:value={responsibleName} placeholder="Navn" required disabled={$postBookingLoading} />
+		</div>
+		<div class="input-group">
+			<label for="responsibleNumber">Telefonnummer</label>
+			<input id="responsibleNumber" type="tel" bind:value={responsibleNumber} placeholder="99887766" required disabled={$postBookingLoading} />
+		</div>
+		<button type="submit" disabled={$postBookingLoading || !!endBeforeStart}>
+			{#if $postBookingLoading}
+				<Spinner size="small" inline />
+				Oppretter...
+			{:else}
+				Opprett booking
+			{/if}
+		</button>
+	</form>
+</div>
 
+<style>
+	.new-booking {
+		min-width: 300px;
+	}
+
+	.title {
+		margin: 0 0 1.5rem;
+		font-size: 1.3rem;
+		font-weight: bold;
+		color: #525a8a;
+	}
+
+	.input-group {
+		margin-bottom: 1rem;
+	}
+
+	label {
+		display: block;
+		margin-bottom: 0.25rem;
+		font-size: 0.9rem;
+		color: #555;
+		font-weight: 500;
+	}
+
+	input {
+		width: 100%;
+		padding: 0.75rem;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		font-size: 1rem;
+		box-sizing: border-box;
+		background-color: #fff;
+		color: #1c1b1f;
+	}
+
+	input:focus {
+		outline: none;
+		border-color: #525a8a;
+		box-shadow: 0 0 0 2px rgba(82, 90, 138, 0.15);
+	}
+
+	.field-error {
+		margin: 0.25rem 0 0;
+		font-size: 0.85rem;
+		color: #cc0000;
+	}
+
+	button {
+		width: 100%;
+		padding: 0.75rem;
+		margin-top: 0.5rem;
+		border: none;
+		border-radius: 5px;
+		background: #007bff;
+		color: #fff;
+		font-size: 1rem;
+		cursor: pointer;
+		transition: background 0.3s ease;
+	}
+
+	button:hover:not(:disabled) {
+		background: #0056b3;
+	}
+
+	button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+</style>
