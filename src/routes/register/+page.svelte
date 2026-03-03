@@ -1,117 +1,284 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte'
+	import { goto } from '$app/navigation'
+	import { base } from '$app/paths'
 	import { API_BASE_URL } from '$lib/config'
+	import { addUserToLocalStorage } from '$lib/api/users'
 	import { isLoading, setLoading } from '../../stores/loading'
 	import Spinner from '$lib/components/spinner/Spinner.svelte'
 
-	let password = ''
 	let name = ''
 	let email = ''
 	let phoneNumber = ''
 	let apartmentNumber = ''
+	let password = ''
+	let passwordConfirm = ''
+	let backendErrors: string[] = []
 
-	const dispatch = createEventDispatcher()
 	const registerLoading = isLoading('register')
 
+	const errorTranslations: Record<string, string> = {
+		'Email already exists': 'E-postadressen er allerede registrert',
+		'Email is required': 'E-post er påkrevd',
+		'Password is required': 'Passord er påkrevd',
+		'Name is required': 'Navn er påkrevd',
+		'Invalid email format': 'Ugyldig e-postformat',
+		'Password must be at least 8 characters': 'Passordet må være minst 8 tegn',
+		'Password must be at most 128 characters': 'Passordet kan ikke være lengre enn 128 tegn',
+		'Password must contain at least one uppercase letter': 'Passordet må inneholde minst én stor bokstav',
+		'Password must contain at least one lowercase letter': 'Passordet må inneholde minst én liten bokstav',
+		'Password must contain at least one digit': 'Passordet må inneholde minst ett tall',
+		'Password must contain at least one special character': 'Passordet må inneholde minst ett spesialtegn',
+	}
+
+	function translateError(error: string): string {
+		return errorTranslations[error] ?? error
+	}
+
+	$: passwordChecks = {
+		minLength: password.length >= 8,
+		maxLength: password.length <= 128,
+		hasUppercase: /[A-Z]/.test(password),
+		hasLowercase: /[a-z]/.test(password),
+		hasDigit: /[0-9]/.test(password),
+		hasSpecial: /[^A-Za-z0-9]/.test(password),
+	}
+
+	$: passwordValid = Object.values(passwordChecks).every(Boolean)
+	$: passwordsMatch = password === passwordConfirm
+
 	async function registerUser() {
+		if (!passwordValid || !passwordsMatch) return
+
+		backendErrors = []
 		setLoading('register', true)
 		try {
-			const user = {
-				password,
-				name,
-				email,
-				phoneNumber,
-				apartmentNumber,
-			}
-
 			const response = await fetch(`${API_BASE_URL}/api/postUser`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(user),
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ name, email, phoneNumber, apartmentNumber, password }),
 			})
 
 			if (response.ok) {
-				const result = await response.json()
-				dispatch('registerSuccess', result)
+				const loginResponse = await fetch(`${API_BASE_URL}/api/login`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ username: email, password }),
+				})
+				if (loginResponse.ok) {
+					const data = await loginResponse.json()
+					localStorage.setItem('authToken', data.authToken)
+					localStorage.setItem('userId', data.userId)
+					await addUserToLocalStorage(data.userId)
+					goto(`${base}/`)
+				}
 			} else {
-				const error = await response.text()
-				dispatch('registerError', error)
-				console.log('Error registering user:', JSON.parse(error))
+				try {
+					const errorData = await response.json()
+					if (Array.isArray(errorData)) {
+						backendErrors = errorData.map(translateError)
+					} else if (typeof errorData === 'string') {
+						backendErrors = [translateError(errorData)]
+					} else if (errorData.message) {
+						backendErrors = [translateError(errorData.message)]
+					} else {
+						backendErrors = ['En feil oppstod. Prøv igjen.']
+					}
+				} catch {
+					backendErrors = ['En feil oppstod. Prøv igjen.']
+				}
 			}
+		} catch {
+			backendErrors = ['Kunne ikke koble til serveren. Prøv igjen.']
 		} finally {
 			setLoading('register', false)
 		}
 	}
 </script>
 
-<main>
-	<h1>Register</h1>
-	<form on:submit|preventDefault={registerUser}>
-		<label>
-			Fullt navn:
-			<input type="text" bind:value={name} required disabled={$registerLoading} />
-		</label>
-		<label>
-			E-post:
-			<input type="email" bind:value={email} required disabled={$registerLoading} />
-		</label>
-		<label>
-			Passord:
-			<input type="password" bind:value={password} required disabled={$registerLoading} />
-		</label>
-		<label>
-			Tlf-nummer:
-			<input type="tel" bind:value={phoneNumber} required disabled={$registerLoading} />
-		</label>
-		<label>
-			Leilighetsnummer:
-			<input type="text" bind:value={apartmentNumber} required disabled={$registerLoading} />
-		</label>
-		<button type="submit" disabled={$registerLoading}>
-			{#if $registerLoading}
-				<Spinner size="small" inline />
-				Registrerer...
-			{:else}
-				Register
+<div class="register-container">
+	<div class="register-card">
+		<h1>Registrer deg</h1>
+		<form on:submit|preventDefault={registerUser}>
+			<div class="input-group">
+				<label for="name">Fullt navn</label>
+				<input id="name" type="text" bind:value={name} placeholder="Ola Nordmann" required disabled={$registerLoading} />
+			</div>
+			<div class="input-group">
+				<label for="email">E-post</label>
+				<input id="email" type="email" bind:value={email} placeholder="ola@example.com" required disabled={$registerLoading} />
+			</div>
+			<div class="input-group">
+				<label for="phoneNumber">Telefonnummer</label>
+				<input id="phoneNumber" type="tel" bind:value={phoneNumber} placeholder="99887766" required disabled={$registerLoading} />
+			</div>
+			<div class="input-group">
+				<label for="apartmentNumber">Leilighetsnummer</label>
+				<input id="apartmentNumber" type="text" bind:value={apartmentNumber} placeholder="A101" required disabled={$registerLoading} />
+			</div>
+			<div class="input-group">
+				<label for="password">Passord</label>
+				<input id="password" type="password" bind:value={password} placeholder="Passord" required disabled={$registerLoading} />
+				{#if password.length > 0}
+					<ul class="password-requirements">
+						<li class:met={passwordChecks.minLength}>Minst 8 tegn</li>
+						<li class:met={passwordChecks.maxLength}>Maks 128 tegn</li>
+						<li class:met={passwordChecks.hasUppercase}>Minst én stor bokstav</li>
+						<li class:met={passwordChecks.hasLowercase}>Minst én liten bokstav</li>
+						<li class:met={passwordChecks.hasDigit}>Minst ett tall</li>
+						<li class:met={passwordChecks.hasSpecial}>Minst ett spesialtegn</li>
+					</ul>
+				{/if}
+			</div>
+			<div class="input-group">
+				<label for="passwordConfirm">Bekreft passord</label>
+				<input id="passwordConfirm" type="password" bind:value={passwordConfirm} placeholder="Gjenta passord" required disabled={$registerLoading} />
+				{#if passwordConfirm.length > 0 && !passwordsMatch}
+					<p class="field-error">Passordene stemmer ikke overens</p>
+				{/if}
+			</div>
+			{#if backendErrors.length > 0}
+				<ul class="error-list">
+					{#each backendErrors as error}
+						<li>{error}</li>
+					{/each}
+				</ul>
 			{/if}
-		</button>
-	</form>
-</main>
+			<button type="submit" disabled={$registerLoading}>
+				{#if $registerLoading}
+					<Spinner size="small" inline />
+					Registrerer...
+				{:else}
+					Registrer
+				{/if}
+			</button>
+		</form>
+		<p class="login-link">Har du allerede en konto? <a href="{base}/login">Logg inn</a></p>
+	</div>
+</div>
 
 <style>
-	main {
-		max-width: 600px;
-		margin: 0 auto;
-		padding: 1rem;
-		border: 1px solid #ccc;
-		border-radius: 4px;
+	.register-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+	}
+
+	.register-card {
+		background: #fff;
+		padding: 2rem;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		max-width: 440px;
+		width: 100%;
+		text-align: center;
+	}
+
+	h1 {
+		margin-bottom: 1.5rem;
+		margin-top: 0;
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #525a8a;
+	}
+
+	.input-group {
+		margin-bottom: 1rem;
+		text-align: left;
 	}
 
 	label {
 		display: block;
-		margin-bottom: 0.5rem;
+		margin-bottom: 0.25rem;
+		font-size: 0.9rem;
+		color: #555;
 	}
 
 	input {
 		width: 100%;
-		padding: 0.5rem;
-		margin-bottom: 1rem;
+		padding: 0.75rem;
 		border: 1px solid #ccc;
-		border-radius: 4px;
+		border-radius: 5px;
+		font-size: 1rem;
+		box-sizing: border-box;
+	}
+
+	.password-requirements {
+		list-style: none;
+		padding: 0.5rem 0 0;
+		margin: 0;
+		font-size: 0.85rem;
+	}
+
+	.password-requirements li {
+		color: #999;
+		padding: 0.1rem 0;
+	}
+
+	.password-requirements li::before {
+		content: '✗ ';
+		color: #cc0000;
+	}
+
+	.password-requirements li.met {
+		color: #2a7a2a;
+	}
+
+	.password-requirements li.met::before {
+		content: '✓ ';
+		color: #2a7a2a;
+	}
+
+	.field-error {
+		margin: 0.25rem 0 0;
+		font-size: 0.85rem;
+		color: #cc0000;
+	}
+
+	.error-list {
+		list-style: none;
+		padding: 0.75rem 1rem;
+		margin: 0 0 1rem;
+		background: #fff0f0;
+		border: 1px solid #ffcccc;
+		border-radius: 5px;
+		text-align: left;
+		color: #cc0000;
+		font-size: 0.9rem;
+	}
+
+	.error-list li + li {
+		margin-top: 0.25rem;
 	}
 
 	button {
-		padding: 0.5rem 1rem;
-		background-color: #007bff;
-		color: white;
+		width: 100%;
+		padding: 0.75rem;
 		border: none;
-		border-radius: 4px;
+		border-radius: 5px;
+		background: #007bff;
+		color: #fff;
+		font-size: 1rem;
 		cursor: pointer;
+		transition: background 0.3s ease;
 	}
 
 	button:hover {
-		background-color: #0056b3;
+		background: #0056b3;
+	}
+
+	.login-link {
+		margin-top: 1rem;
+		font-size: 0.9rem;
+		color: #555;
+	}
+
+	.login-link a {
+		color: #007bff;
+		text-decoration: none;
+	}
+
+	.login-link a:hover {
+		text-decoration: underline;
 	}
 </style>
