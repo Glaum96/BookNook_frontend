@@ -8,7 +8,6 @@
 	import './header.css'
 	import NewBooking from '../newBooking/newBooking.svelte'
 	import StaticInfo from '../staticInfo/staticInfo.svelte'
-	//import '~@sb1/ffe-buttons/css/buttons.css'
 
 	const navigateTo = (url: string) => {
 		goto(`${base}${url}`)
@@ -33,10 +32,16 @@
 	}
 
 	let userName: string | null = null
+	let mobileNavOpen = false
+
 	onMount(() => {
 		const user = getUserFromLocalStorage()
 		userName = user ? user.name : null
 	})
+
+	const closeNav = () => {
+		mobileNavOpen = false
+	}
 
 	const toggleNewBookingModal = () => {
 		showModal.set(!$showModal)
@@ -60,23 +65,33 @@
 
 <header class="global-header">
 	<nav>
-		<a class="title" href="{base}/" on:click|preventDefault={() => navigateTo('/')}>
+		<a class="title" href="{base}/" on:click|preventDefault={() => { navigateTo('/'); closeNav(); }}>
 			<img src="{base}/booknook_full_logo.png" alt="BookNook Logo" />
 		</a>
-		{#if $isAuthenticated}
-			<button id="toggleModalButton" on:click={toggleNewBookingModal}>
-				<p>Ny booking</p>
-				<span class="icon">+</span>
-			</button>
-			<a href="{base}/minside" on:click|preventDefault={() => navigateTo('/minside')}>{getUserNameText(userName)}</a>
-			{#if $isAdminUser}
-				<a href="{base}/admin" on:click|preventDefault={() => navigateTo('/admin')}>Admin</a>
+
+		<div class="nav-items" class:open={mobileNavOpen}>
+			{#if $isAuthenticated}
+				<button id="toggleModalButton" on:click={() => { toggleNewBookingModal(); closeNav(); }}>
+					<p>Ny booking</p>
+					<span class="icon">+</span>
+				</button>
+				<a href="{base}/minside" on:click|preventDefault={() => { navigateTo('/minside'); closeNav(); }}>{getUserNameText(userName)}</a>
+				{#if $isAdminUser}
+					<a href="{base}/admin" on:click|preventDefault={() => { navigateTo('/admin'); closeNav(); }}>Admin</a>
+				{/if}
+				<button on:click={() => { handleLogOut(); closeNav(); }} class="nav-link">Logg ut</button>
+			{:else}
+				<a href="{base}/register" on:click|preventDefault={() => { navigateTo('/register'); closeNav(); }}>Registrer</a>
+				<a href="{base}/login" on:click|preventDefault={() => { navigateTo('/login'); closeNav(); }}>Logg inn</a>
 			{/if}
-			<button on:click={handleLogOut} class="nav-link">Logg ut</button>
-		{:else}
-			<a href="{base}/register" on:click|preventDefault={() => navigateTo('/register')}>Registrer</a>
-			<a href="{base}/login" on:click|preventDefault={() => navigateTo('/login')}>Logg inn</a>
-		{/if}
-		<img id="info_img" src="{base}/info.png" alt="Info" on:click={toggleStaticInfoModal} />
+		</div>
+
+		<img id="info_img" src="{base}/info.png" alt="Info" on:click={() => { toggleStaticInfoModal(); closeNav(); }} />
+
+		<button class="hamburger" aria-label="Åpne meny" on:click|stopPropagation={() => (mobileNavOpen = !mobileNavOpen)}>
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
 	</nav>
 </header>

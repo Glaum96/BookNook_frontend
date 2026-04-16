@@ -47,11 +47,11 @@
   color: #b01c03;
   border-radius: 5px;
   border: none;
-  font-size: 1.1rem;
-  float: right;
-  display: block;
-  padding: 8px;
-  margin: 0;
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  min-height: 36px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .button-container{

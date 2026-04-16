@@ -27,11 +27,15 @@
   color: #b01c03;
   border-radius: 5px;
   border: none;
-  height: 36px;
-  margin-top: 16px;
-  font-size: 1.1rem;
-  float: right;
+  min-height: 44px;
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
   font-weight: bold;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
 }
 
 .my-bookings-header{

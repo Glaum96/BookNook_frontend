@@ -5,7 +5,7 @@
   padding: 1rem;
   flex-wrap: nowrap;
   max-width: 1200px;
-  margin: 0 50px;
+  margin: 0 auto;
 }
 
 .profile-input-label {
@@ -53,8 +53,11 @@ section.bookings {
   height: 36px;
   margin-top: 16px;
   font-size: 1.1rem;
-  float: right;
+  display: block;
+  margin-left: auto;
   font-weight: bold;
+  padding: 0 1rem;
+  cursor: pointer;
 }
 
 input {
@@ -68,17 +71,18 @@ input {
 }
 
 @media (max-width: 768px) {
-  .min-side-container  {
+  .min-side-container {
     flex-wrap: wrap;
+    margin: 0;
+    gap: 1rem;
   }
   section.min-side-bookings,
   section.min-side-user {
     flex: 0 0 100%;
   }
-  form {
-    flex-direction: column; /* Stack columns vertically */
-  }
-  .min-side-inputcolumn {
-    align-items: flex-start; /* Align items to the start */
+  .button {
+    min-height: 44px;
+    height: auto;
+    padding: 0.6rem 1.25rem;
   }
 }

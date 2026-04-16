@@ -119,11 +119,12 @@
 
 	input[type='text'],
 	input[type='password'] {
-		width: 93.5%;
+		width: 100%;
 		padding: 0.75rem;
 		border: 1px solid #ccc;
 		border-radius: 5px;
 		font-size: 1rem;
+		box-sizing: border-box;
 	}
 
 	button {

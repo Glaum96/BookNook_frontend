@@ -78,10 +78,28 @@ input {
 
 @media (max-width: 768px) {
   .main-container {
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    flex-wrap: wrap;
+    flex-direction: column;
   }
-  section.new-booking,
+  .calendar-section {
+    min-width: 0;
+    width: 100%;
+  }
+  section.new-booking {
+    min-width: 0;
+    flex: 0 0 100%;
+    width: 100%;
+  }
   section.your-bookings {
-    flex: 0 0 100%; /* Full width on smaller screens */
+    flex: 0 0 100%;
+    width: 100%;
+  }
+  .button {
+    float: none;
+    display: block;
+    margin-left: auto;
+    width: auto;
+    min-height: 44px;
+    padding: 0.6rem 1.25rem;
   }
 }
