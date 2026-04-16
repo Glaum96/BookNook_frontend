@@ -57,17 +57,19 @@
 				<p><strong>Tidsperiode: </strong> {getTime(booking.startTime)} - {getTime(booking.endTime)}</p>
 				<p><strong>Ansvarlig: </strong> {booking.responsibleName}</p>
 				<p><strong>Telefonnummer: </strong> {booking.responsibleNumber}</p>
-				<button
-					class="delete-button"
-					on:click={() => handleDeleteBooking(booking.id)}
-					disabled={$deleteBookingLoading && deletingBookingId === booking.id}
-				>
-					{#if $deleteBookingLoading && deletingBookingId === booking.id}
-						<Spinner size="small" inline />
-					{:else}
-						Slett booking
-					{/if}
-				</button>
+				{#if new Date(booking.endTime) > new Date()}
+					<button
+						class="delete-button"
+						on:click={() => handleDeleteBooking(booking.id)}
+						disabled={$deleteBookingLoading && deletingBookingId === booking.id}
+					>
+						{#if $deleteBookingLoading && deletingBookingId === booking.id}
+							<Spinner size="small" inline />
+						{:else}
+							Slett booking
+						{/if}
+					</button>
+				{/if}
 			</div>
 		{:else}
 			<p class="no-bookings">Ingen bookinger funnet.</p>
