@@ -153,14 +153,14 @@ img {
 		box-sizing: border-box;
 	}
 
-	.nav-items #toggleModalButton {
-		width: 100%;
-		height: auto;
-		min-height: 44px;
-		margin: 0;
-		border-radius: 0;
-		border-bottom: 1px solid var(--border-separator);
-		justify-content: flex-start;
+	#toggleModalButton p {
+		display: none;
+	}
+
+	#toggleModalButton {
+		height: 36px;
+		padding: 0 0.6rem;
+		font-size: 1.4rem;
 	}
 
 	.theme-toggle {

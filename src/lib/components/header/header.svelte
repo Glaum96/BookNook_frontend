@@ -83,12 +83,15 @@
 			<img src="{base}/booknook_full_logo.png" alt="BookNook Logo" />
 		</a>
 
+		{#if $isAuthenticated}
+			<button id="toggleModalButton" on:click={toggleNewBookingModal}>
+				<p>Ny booking</p>
+				<span class="icon">+</span>
+			</button>
+		{/if}
+
 		<div class="nav-items" class:open={mobileNavOpen}>
 			{#if $isAuthenticated}
-				<button id="toggleModalButton" on:click={() => { toggleNewBookingModal(); closeNav(); }}>
-					<p>Ny booking</p>
-					<span class="icon">+</span>
-				</button>
 				<a href="{base}/minside" on:click|preventDefault={() => { navigateTo('/minside'); closeNav(); }}>{getUserNameText(userName)}</a>
 				{#if $isAdminUser}
 					<a href="{base}/admin" on:click|preventDefault={() => { navigateTo('/admin'); closeNav(); }}>Admin</a>
