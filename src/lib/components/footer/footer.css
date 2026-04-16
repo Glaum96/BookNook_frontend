@@ -47,3 +47,9 @@ button img {
     background-color: var(--button-bg-color);
     color: var(--button-text-color);
 }
+
+@media (max-width: 768px) {
+    footer {
+        position: static;
+    }
+}
