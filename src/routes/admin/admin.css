@@ -7,13 +7,13 @@
 }
 
 .admin-heading {
-  color: #525a8a;
+  color: var(--color-primary);
 }
 
 .users-admin-panel,
 .bookings {
   margin: 0 10px;
-  background-color: white;
+  background-color: var(--bg-card);
   padding: 32px;
   border-radius: 10px;
   overflow-x: auto;
@@ -32,19 +32,19 @@
 .admin-user-table td,
 .admin-booking-table th,
 .admin-booking-table td {
-  border: 1px solid #eaf3ff;
+  border: 1px solid var(--bg-card-alt);
   padding: 8px;
 }
 
 .admin-user-table th,
 .admin-booking-table th {
-  background-color: #eaf3ff;
-  color: black;
+  background-color: var(--bg-card-alt);
+  color: var(--text-body);
 }
 
 .delete-button {
-  background-color: #ea9c8f;
-  color: #b01c03;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
   border-radius: 5px;
   border: none;
   font-size: 1rem;

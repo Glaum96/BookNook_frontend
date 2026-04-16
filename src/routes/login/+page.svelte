@@ -96,10 +96,10 @@
 	}
 
 	.login-card {
-		background: #fff;
+		background: var(--bg-card);
 		padding: 2rem;
 		border-radius: 10px;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 4px 8px var(--shadow-sm);
 		max-width: 400px;
 		width: 100%;
 		text-align: center;
@@ -110,7 +110,7 @@
 		margin-top: 0;
 		font-size: 1.5rem;
 		font-weight: bold;
-		color: #525a8a;
+		color: var(--color-primary);
 	}
 
 	.input-group {
@@ -121,7 +121,7 @@
 	input[type='password'] {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #ccc;
+		border: 1px solid var(--border-color);
 		border-radius: 5px;
 		font-size: 1rem;
 		box-sizing: border-box;
@@ -132,7 +132,7 @@
 		padding: 0.75rem;
 		border: none;
 		border-radius: 5px;
-		background: #007bff;
+		background: var(--color-action);
 		color: #fff;
 		font-size: 1rem;
 		cursor: pointer;
@@ -140,11 +140,11 @@
 	}
 
 	button:hover {
-		background: #0056b3;
+		background: var(--color-action-hover);
 	}
 
 	.error {
-		color: red;
+		color: var(--color-error);
 		margin-top: 1rem;
 	}
 </style>

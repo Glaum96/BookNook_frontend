@@ -8,6 +8,8 @@
 	import './header.css'
 	import NewBooking from '../newBooking/newBooking.svelte'
 	import StaticInfo from '../staticInfo/staticInfo.svelte'
+	import { theme } from '../../../stores/theme'
+	import type { Theme } from '../../../stores/theme'
 
 	const navigateTo = (url: string) => {
 		goto(`${base}${url}`)
@@ -61,6 +63,18 @@
 			props: {},
 		})
 	}
+
+	const themeOrder: Theme[] = ['system', 'light', 'dark']
+	const themeLabels: Record<Theme, string> = {
+		system: 'Systemvalg',
+		light: 'Lys modus',
+		dark: 'Mørk modus',
+	}
+
+	const cycleTheme = () => {
+		const i = themeOrder.indexOf($theme)
+		theme.set(themeOrder[(i + 1) % themeOrder.length])
+	}
 </script>
 
 <header class="global-header">
@@ -87,6 +101,24 @@
 		</div>
 
 		<img id="info_img" src="{base}/info.png" alt="Info" on:click={() => { toggleStaticInfoModal(); closeNav(); }} />
+
+		<button class="theme-toggle" on:click={cycleTheme} title={themeLabels[$theme]} aria-label={themeLabels[$theme]}>
+			{#if $theme === 'light'}
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+					<circle cx="12" cy="12" r="5"/>
+					<path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+				</svg>
+			{:else if $theme === 'dark'}
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+					<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+				</svg>
+			{:else}
+				<svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<circle cx="12" cy="12" r="9" fill="none"/>
+					<path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor" stroke="none"/>
+				</svg>
+			{/if}
+		</button>
 
 		<button class="hamburger" aria-label="Åpne meny" on:click|stopPropagation={() => (mobileNavOpen = !mobileNavOpen)}>
 			<span></span>

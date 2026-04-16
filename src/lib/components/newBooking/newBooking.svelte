@@ -116,7 +116,7 @@
 		margin: 0 0 1.5rem;
 		font-size: 1.3rem;
 		font-weight: bold;
-		color: #525a8a;
+		color: var(--color-primary);
 	}
 
 	.input-group {
@@ -127,31 +127,31 @@
 		display: block;
 		margin-bottom: 0.25rem;
 		font-size: 0.9rem;
-		color: #555;
+		color: var(--text-secondary);
 		font-weight: 500;
 	}
 
 	input {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #ccc;
+		border: 1px solid var(--border-color);
 		border-radius: 5px;
 		font-size: 1rem;
 		box-sizing: border-box;
-		background-color: #fff;
-		color: #1c1b1f;
+		background-color: var(--bg-input);
+		color: var(--text-body);
 	}
 
 	input:focus {
 		outline: none;
-		border-color: #525a8a;
-		box-shadow: 0 0 0 2px rgba(82, 90, 138, 0.15);
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 2px var(--focus-ring);
 	}
 
 	.field-error {
 		margin: 0.25rem 0 0;
 		font-size: 0.85rem;
-		color: #cc0000;
+		color: var(--color-error);
 	}
 
 	button {
@@ -160,7 +160,7 @@
 		margin-top: 0.5rem;
 		border: none;
 		border-radius: 5px;
-		background: #007bff;
+		background: var(--color-action);
 		color: #fff;
 		font-size: 1rem;
 		cursor: pointer;
@@ -168,7 +168,7 @@
 	}
 
 	button:hover:not(:disabled) {
-		background: #0056b3;
+		background: var(--color-action-hover);
 	}
 
 	button:disabled {
@@ -180,10 +180,10 @@
 		list-style: none;
 		padding: 0.75rem 1rem;
 		margin: 0 0 1rem;
-		background: #fff0f0;
-		border: 1px solid #ffcccc;
+		background: var(--color-error-bg);
+		border: 1px solid var(--color-error-border);
 		border-radius: 5px;
-		color: #cc0000;
+		color: var(--color-error);
 		font-size: 0.9rem;
 	}
 

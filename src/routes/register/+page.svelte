@@ -188,10 +188,10 @@
 	}
 
 	.register-card {
-		background: #fff;
+		background: var(--bg-card);
 		padding: 2rem;
 		border-radius: 10px;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 4px 8px var(--shadow-sm);
 		max-width: 440px;
 		width: 100%;
 		text-align: center;
@@ -202,7 +202,7 @@
 		margin-top: 0;
 		font-size: 1.5rem;
 		font-weight: bold;
-		color: #525a8a;
+		color: var(--color-primary);
 	}
 
 	.input-group {
@@ -214,13 +214,13 @@
 		display: block;
 		margin-bottom: 0.25rem;
 		font-size: 0.9rem;
-		color: #555;
+		color: var(--text-secondary);
 	}
 
 	input {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #ccc;
+		border: 1px solid var(--border-color);
 		border-radius: 5px;
 		font-size: 1rem;
 		box-sizing: border-box;
@@ -234,45 +234,45 @@
 	}
 
 	.password-requirements li {
-		color: #999;
+		color: var(--text-very-muted);
 		padding: 0.1rem 0;
 	}
 
 	.password-requirements li::before {
 		content: '✗ ';
-		color: #cc0000;
+		color: var(--color-error);
 	}
 
 	.password-requirements li.met {
-		color: #2a7a2a;
+		color: var(--color-success);
 	}
 
 	.password-requirements li.met::before {
 		content: '✓ ';
-		color: #2a7a2a;
+		color: var(--color-success);
 	}
 
 	.field-error {
 		margin: 0.25rem 0 0;
 		font-size: 0.85rem;
-		color: #cc0000;
+		color: var(--color-error);
 	}
 
 	.field-info {
 		margin: 0.25rem 0 0;
 		font-size: 0.85rem;
-		color: #888;
+		color: var(--text-muted);
 	}
 
 	.error-list {
 		list-style: none;
 		padding: 0.75rem 1rem;
 		margin: 0 0 1rem;
-		background: #fff0f0;
-		border: 1px solid #ffcccc;
+		background: var(--color-error-bg);
+		border: 1px solid var(--color-error-border);
 		border-radius: 5px;
 		text-align: left;
-		color: #cc0000;
+		color: var(--color-error);
 		font-size: 0.9rem;
 	}
 
@@ -285,7 +285,7 @@
 		padding: 0.75rem;
 		border: none;
 		border-radius: 5px;
-		background: #007bff;
+		background: var(--color-action);
 		color: #fff;
 		font-size: 1rem;
 		cursor: pointer;
@@ -293,17 +293,17 @@
 	}
 
 	button:hover {
-		background: #0056b3;
+		background: var(--color-action-hover);
 	}
 
 	.login-link {
 		margin-top: 1rem;
 		font-size: 0.9rem;
-		color: #555;
+		color: var(--text-secondary);
 	}
 
 	.login-link a {
-		color: #007bff;
+		color: var(--color-action);
 		text-decoration: none;
 	}
 

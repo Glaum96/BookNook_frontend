@@ -9,27 +9,52 @@
 	import { onMount } from 'svelte'
 	import { globalOnMount } from '$lib/api/globalOnMount'
 	import NewBooking from '$lib/components/newBooking/newBooking.svelte'
+	import { browser } from '$app/environment'
+	import { theme } from '../stores/theme'
+	import type { Theme } from '../stores/theme'
 
 	let bookings: Booking[] = []
 
+	function getSystemPreference(): 'light' | 'dark' {
+		if (!browser) return 'light'
+		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+	}
+
+	function applyTheme(t: Theme) {
+		if (!browser) return
+		const effective = t === 'system' ? getSystemPreference() : t
+		document.documentElement.setAttribute('data-theme', effective)
+	}
+
+	$: if (browser) applyTheme($theme)
+
 	onMount(async () => {
+		applyTheme($theme)
+		const mq = window.matchMedia('(prefers-color-scheme: dark)')
+		const handler = () => {
+			if ($theme === 'system') applyTheme('system')
+		}
+		mq.addEventListener('change', handler)
+
 		const { user: fetchedUser, bookings: fetchedBookings } = await globalOnMount()
 		user = fetchedUser
 		bookings = fetchedBookings
+
+		return () => mq.removeEventListener('change', handler)
 	})
 
 	// Handle body scrolling when modal is shown
 	onMount(() => {
 		const unsubscribe = showModal.subscribe((value) => {
 			if (value) {
-				document.body.style.overflow = 'hidden' // Disable scrolling
+				document.body.style.overflow = 'hidden'
 			} else {
-				document.body.style.overflow = '' // Restore scrolling
+				document.body.style.overflow = ''
 			}
 		})
 
 		return () => {
-			unsubscribe() // Cleanup subscription when component is destroyed
+			unsubscribe()
 		}
 	})
 

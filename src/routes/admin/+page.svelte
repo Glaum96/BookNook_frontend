@@ -180,7 +180,7 @@
 
 	.rules-panel {
 		margin: 0 10px;
-		background-color: white;
+		background-color: var(--bg-card);
 		padding: 32px;
 		border-radius: 10px;
 	}
@@ -190,7 +190,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem;
-		border: 1px solid #eaf3ff;
+		border: 1px solid var(--bg-card-alt);
 		border-radius: 8px;
 		margin-bottom: 0.75rem;
 	}
@@ -203,12 +203,12 @@
 
 	.rule-name {
 		font-weight: 600;
-		color: #1c1b1f;
+		color: var(--text-body);
 	}
 
 	.rule-description {
 		font-size: 0.85rem;
-		color: #555;
+		color: var(--text-secondary);
 	}
 
 	.toggle-switch {
@@ -229,7 +229,7 @@
 		position: absolute;
 		cursor: pointer;
 		inset: 0;
-		background-color: #ccc;
+		background-color: var(--border-color);
 		border-radius: 26px;
 		transition: background-color 0.2s;
 	}
@@ -241,13 +241,13 @@
 		width: 20px;
 		left: 3px;
 		bottom: 3px;
-		background-color: white;
+		background-color: var(--bg-card);
 		border-radius: 50%;
 		transition: transform 0.2s;
 	}
 
 	.toggle-switch input:checked + .toggle-slider {
-		background-color: #525a8a;
+		background-color: var(--color-primary);
 	}
 
 	.toggle-switch input:checked + .toggle-slider::before {

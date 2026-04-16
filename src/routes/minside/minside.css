@@ -11,7 +11,7 @@
 .profile-input-label {
   font-size: medium;
   font-weight: bold;
-  color: black;
+  color: var(--text-body);
   margin-top: 16px;
   margin-bottom: 8px;
 }
@@ -20,7 +20,7 @@ section.min-side-bookings,
 section.min-side-user {
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 10px;
   padding: 1rem;
   flex: 1;
@@ -38,7 +38,7 @@ section.bookings {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-width: 200px; /* Ensure a minimum width */
+  min-width: 200px;
 }
 
 .inputcolumn:last-child {
@@ -46,8 +46,8 @@ section.bookings {
 }
 
 .button {
-  background-color: #9ad3a4;
-  color: #346c3e;
+  background-color: var(--color-green-bg);
+  color: var(--color-green-dark);
   border-radius: 5px;
   border: none;
   height: 36px;
@@ -61,7 +61,7 @@ section.bookings {
 }
 
 input {
-  background-color: #f0f0f0;
+  background-color: var(--bg-input);
   border-radius: 5px;
   border: none;
   padding: 0.5rem;

@@ -13,6 +13,20 @@
           history.replaceState(null, null, redirect);
         }
       })();
+      // Apply saved theme before first paint to prevent flash
+      (function() {
+        var stored = localStorage.getItem('booknook-theme');
+        var theme = stored || 'system';
+        var effective;
+        if (theme === 'dark') {
+          effective = 'dark';
+        } else if (theme === 'light') {
+          effective = 'light';
+        } else {
+          effective = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', effective);
+      })();
     </script>
     %sveltekit.head%
   </head>

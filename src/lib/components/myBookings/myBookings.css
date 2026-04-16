@@ -1,5 +1,5 @@
 .header {
-  color: #525a8a;
+  color: var(--color-primary);
   margin-top: 0.5rem;
   margin-bottom: 0;
 }
@@ -13,18 +13,18 @@
 }
 
 .booking-card {
-  background-color: #eaf3ff;
+  background-color: var(--bg-card-alt);
   border-radius: 10px;
   padding: 1rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow-sm);
   align-items: center;
 }
 
 .delete-button {
-  background-color: #ea9c8f;
-  color: #b01c03;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
   border-radius: 5px;
   border: none;
   min-height: 44px;
@@ -49,14 +49,14 @@
 .past-bookings {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Adjust spacing between elements */
+  gap: 0.5rem;
   font-size: 0.9rem;
 }
 
 #includePastBookingsCheckBox,
 .past-bookings img {
-  width: 20px; /* Set the same width for both elements */
-  height: 20px; /* Set the same height for both elements */
-  cursor: pointer; /* Add a pointer cursor for better UX */
-  object-fit: contain; /* Ensure the image scales proportionally */
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  object-fit: contain;
 }

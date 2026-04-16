@@ -21,6 +21,8 @@
 	import type { ScheduleXEvent } from '../../../types/ScheduleXEvent'
 	import Spinner from '../spinner/Spinner.svelte'
 	import { isLoading } from '../../../stores/loading'
+	import { theme } from '../../../stores/theme'
+	import { browser } from '$app/environment'
 
 	const calendarLoading = isLoading('bookings')
 	let initialLoadComplete = false
@@ -30,6 +32,13 @@
 	const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 
 	const scrollController = createScrollControllerPlugin({ initialScroll: currentTime })
+
+	function getEffectiveIsDark(t: string): boolean {
+		if (t === 'dark') return true
+		if (t === 'light') return false
+		if (browser) return window.matchMedia('(prefers-color-scheme: dark)').matches
+		return false
+	}
 
 	const calendarConfig = {
 		views: getViews(),
@@ -56,11 +65,33 @@
 			const bookingsFromServer = await getBookings()
 			bookings = bookingsFromServer
 
-			calendarApp = createCalendar({ ...calendarConfig, events: bookings })
+			const isDark = getEffectiveIsDark($theme)
+			calendarApp = createCalendar({ ...calendarConfig, isDark, events: bookings })
 			initialLoadComplete = true
 		} catch (error) {
 			console.error('Error fetching bookings:', error)
 			initialLoadComplete = true
+		}
+
+		const unsubscribeTheme = theme.subscribe((t) => {
+			if (initialLoadComplete) {
+				const isDark = getEffectiveIsDark(t)
+				calendarApp = createCalendar({ ...calendarConfig, isDark, events: bookings })
+			}
+		})
+
+		const mq = window.matchMedia('(prefers-color-scheme: dark)')
+		const handler = () => {
+			if ($theme === 'system' && initialLoadComplete) {
+				const isDark = mq.matches
+				calendarApp = createCalendar({ ...calendarConfig, isDark, events: bookings })
+			}
+		}
+		mq.addEventListener('change', handler)
+
+		return () => {
+			unsubscribeTheme()
+			mq.removeEventListener('change', handler)
 		}
 	})
 </script>
@@ -83,22 +114,22 @@
 		min-height: 400px;
 	}
 
-	/* Override brand color for calendar chrome (today highlight, selected date, etc.) */
+	/* Override brand color for calendar chrome */
 	.calendar-wrapper :global(.sx__calendar-wrapper) {
-		--sx-color-primary: #525a8a;
+		--sx-color-primary: var(--color-primary);
 		--sx-color-on-primary: #fff;
-		--sx-color-primary-container: #e8eaf6;
-		--sx-color-on-primary-container: #1a1f4b;
+		--sx-color-primary-container: var(--color-primary-bg-light);
+		--sx-color-on-primary-container: var(--text-body);
 	}
 
 	/* Event pill styling */
 	:global(.sx__time-grid-event) {
 		border-radius: 6px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+		box-shadow: 0 1px 3px var(--shadow-md);
 	}
 
 	:global(.booking-event) {
-		background-color: #525a8a !important;
+		background-color: var(--color-primary) !important;
 		border-left: 4px solid #3a4169 !important;
 		color: #fff !important;
 	}
@@ -125,14 +156,14 @@
 
 	/* Month grid events */
 	:global(.sx__month-grid-event.booking-event) {
-		background-color: #525a8a !important;
+		background-color: var(--color-primary) !important;
 		color: #fff !important;
 		border-radius: 4px;
 	}
 
 	/* Date/list grid events */
 	:global(.sx__date-grid-event.booking-event) {
-		background-color: #525a8a !important;
+		background-color: var(--color-primary) !important;
 		color: #fff !important;
 		border-radius: 4px;
 	}

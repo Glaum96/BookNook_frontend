@@ -48,14 +48,14 @@
 	}
 
 	h2 {
-		color: #525a8a;
+		color: var(--color-primary);
 		margin-top: 0;
 		margin-bottom: 16px;
 		font-size: 1.3rem;
 	}
 
 	h3 {
-		color: #525a8a;
+		color: var(--color-primary);
 		margin-top: 0;
 		margin-bottom: 8px;
 		font-size: 1rem;
@@ -78,7 +78,7 @@
 	section li {
 		margin: 4px 0;
 		font-size: 0.9rem;
-		color: #333;
+		color: var(--text-dark);
 	}
 
 	ul {

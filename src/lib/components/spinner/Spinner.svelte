@@ -24,8 +24,8 @@
 	}
 
 	.spinner {
-		border: 2px solid #e0e0e0;
-		border-top-color: #002776;
+		border: 2px solid var(--spinner-track);
+		border-top-color: var(--spinner-head);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -49,7 +49,7 @@
 	}
 
 	.label {
-		color: #333;
+		color: var(--text-dark);
 		font-size: 0.875rem;
 	}
 
