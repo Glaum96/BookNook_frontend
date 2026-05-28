@@ -7,6 +7,7 @@
 	import { includePastBookings, setIncludePastBookings } from '../../../stores/includePastBookings'
 	import { isLoading } from '../../../stores/loading'
 	import Spinner from '../spinner/Spinner.svelte'
+	import CheckinSection from '../checkin/CheckinSection.svelte'
 
 	export let userId: string
 	export let bookings: Booking[]
@@ -51,12 +52,14 @@
 			<Spinner size="medium" label="Laster bookinger..." />
 		</div>
 	{:else}
+		{@const latestBookingId = bookings?.length ? bookings.reduce((a, b) => new Date(a.startTime) > new Date(b.startTime) ? a : b).id : null}
 		{#each bookings ?? [] as booking (booking.id)}
 			<div class="booking-card">
 				<p><strong>Dato: </strong> {getDate(booking.startTime)}</p>
 				<p><strong>Tidsperiode: </strong> {getTime(booking.startTime)} - {getTime(booking.endTime)}</p>
 				<p><strong>Ansvarlig: </strong> {booking.responsibleName}</p>
 				<p><strong>Telefonnummer: </strong> {booking.responsibleNumber}</p>
+				<CheckinSection {booking} isLatestBooking={booking.id === latestBookingId} />
 				{#if new Date(booking.endTime) > new Date()}
 					<button
 						class="delete-button"
