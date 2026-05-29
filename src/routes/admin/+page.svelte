@@ -8,6 +8,8 @@
 	import { deleteBooking, fetchAllBookings } from '$lib/api/bookings'
 	import { deleteUser, fetchAllUsers } from '$lib/api/users'
 	import { fetchRules, toggleRule, type Rule } from '$lib/api/rules'
+	import { goto } from '$app/navigation'
+	import { base } from '$app/paths'
 	import { isLoading } from '../../stores/loading'
 	import Spinner from '$lib/components/spinner/Spinner.svelte'
 	import { fetchCheckinImages, fetchCheckinSummary, type BookingCheckinSummary } from '$lib/api/checkin'
@@ -97,6 +99,11 @@
 </svelte:head>
 
 <div class="admin-container">
+	<div class="admin-top-bar">
+		<a href="{base}/logg" on:click|preventDefault={() => goto(`${base}/logg`)} class="logg-link">
+			Aktivitetslogg →
+		</a>
+	</div>
 	<section class="rules-panel">
 		<h3 class="admin-heading">Regler</h3>
 		{#each rules as rule (rule.id)}
@@ -363,6 +370,25 @@
 
 	.image-button--missing {
 		background-color: #e67e22;
+	}
+
+	.admin-top-bar {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.logg-link {
+		color: var(--color-primary);
+		font-weight: 600;
+		font-size: 0.9rem;
+		text-decoration: none;
+		padding: 0.4rem 0.8rem;
+		border: 1px solid var(--color-primary);
+		border-radius: 6px;
+	}
+
+	.logg-link:hover {
+		background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 	}
 
 	.modal-backdrop {
