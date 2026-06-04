@@ -6,11 +6,25 @@
 	import { includePastBookings } from '../../../stores/includePastBookings'
 	import { isLoading } from '../../../stores/loading'
 	import Spinner from '../spinner/Spinner.svelte'
+	import { fetchRules } from '$lib/api/rules'
 
 	export let onClose: () => void
 	export let user: User
 
 	const postBookingLoading = isLoading('postBooking')
+
+	let maxDurationHours: number | null = null
+
+	onMount(async () => {
+		const modalContent = document.querySelector('.modal-content')
+		if (modalContent) {
+			modalContent.setAttribute('tabindex', '-1')
+			;(modalContent as HTMLElement).focus()
+		}
+		const rules = await fetchRules()
+		const durationRule = rules.find((r) => r.id === 'MAX_BOOKING_DURATION_HOURS' && r.enabled)
+		if (durationRule) maxDurationHours = durationRule.value
+	})
 
 	function pad(n: number) { return String(n).padStart(2, '0') }
 
@@ -39,17 +53,13 @@
 	let ruleErrors: string[] = []
 
 	$: endBeforeStart = startTime && endTime && endTime <= startTime
-
-	onMount(() => {
-		const modalContent = document.querySelector('.modal-content')
-		if (modalContent) {
-			modalContent.setAttribute('tabindex', '-1')
-			;(modalContent as HTMLElement).focus()
-		}
-	})
+	$: durationHours = (startTime && endTime && !endBeforeStart)
+		? (new Date(`2000-01-01T${endTime}:00`).getTime() - new Date(`2000-01-01T${startTime}:00`).getTime()) / 3_600_000
+		: 0
+	$: tooLong = maxDurationHours !== null && durationHours > maxDurationHours
 
 	async function handleSubmit() {
-		if (endBeforeStart) return
+		if (endBeforeStart || tooLong) return
 
 		ruleErrors = []
 		const newBooking: Booking = {
@@ -89,6 +99,8 @@
 		</div>
 		{#if endBeforeStart}
 			<p class="field-error">Sluttidspunkt må være etter starttidspunkt</p>
+		{:else if tooLong}
+			<p class="field-error">Bookingen er for lang — maks {maxDurationHours} timer</p>
 		{/if}
 		<div class="input-group">
 			<label for="responsibleName">Ansvarlig</label>
@@ -105,7 +117,7 @@
 				{/each}
 			</ul>
 		{/if}
-		<button type="submit" disabled={$postBookingLoading || !!endBeforeStart}>
+		<button type="submit" disabled={$postBookingLoading || !!endBeforeStart || tooLong}>
 			{#if $postBookingLoading}
 				<Spinner size="small" inline />
 				Oppretter...

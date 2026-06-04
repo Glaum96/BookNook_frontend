@@ -126,6 +126,11 @@
 	let savingBooking = false
 
 	$: editBookingEndBeforeStart = editBookingStartTime && editBookingEndTime && editBookingEndTime <= editBookingStartTime
+	$: editBookingDurationHours = (editBookingStartTime && editBookingEndTime && !editBookingEndBeforeStart)
+		? (new Date(`2000-01-01T${editBookingEndTime}:00`).getTime() - new Date(`2000-01-01T${editBookingStartTime}:00`).getTime()) / 3_600_000
+		: 0
+	$: maxDurationRule = rules.find((r) => r.id === 'MAX_BOOKING_DURATION_HOURS' && r.enabled)
+	$: editBookingTooLong = !!maxDurationRule && editBookingDurationHours > maxDurationRule.value
 
 	function toLocalDateString(isoString: string): string {
 		const d = new Date(isoString)
@@ -248,7 +253,7 @@
 	}
 
 	async function handleSaveBooking() {
-		if (editBookingEndBeforeStart) return
+		if (editBookingEndBeforeStart || editBookingTooLong) return
 		savingBooking = true
 		editBookingError = ''
 		editBookingSuccess = ''
@@ -324,6 +329,7 @@
 				const pLabel = pt === 'month' ? 'måneden' : pt === 'quarter' ? 'kvartalet' : pt === 'year' ? 'året' : `${pd} dager`
 				return `Maks ${v} timer per ${pLabel}`
 			}
+			case 'MAX_BOOKING_DURATION_HOURS': return `En booking kan maks vare ${v} timer`
 			default: return rule.description
 		}
 	}
@@ -731,6 +737,8 @@
 				</div>
 				{#if editBookingEndBeforeStart}
 					<p class="feedback feedback--error">Sluttidspunkt må være etter starttidspunkt</p>
+				{:else if editBookingTooLong}
+					<p class="feedback feedback--error">Bookingen er for lang — maks {maxDurationRule?.value} timer</p>
 				{/if}
 				<div class="form-divider"></div>
 				<label class="form-label">
@@ -760,7 +768,7 @@
 			</div>
 			<div class="modal-actions">
 				<button class="cancel-button" on:click={() => (editBookingModalOpen = false)}>Avbryt</button>
-				<button class="save-button" on:click={handleSaveBooking} disabled={savingBooking || !!editBookingEndBeforeStart}>
+				<button class="save-button" on:click={handleSaveBooking} disabled={savingBooking || !!editBookingEndBeforeStart || editBookingTooLong}>
 					{#if savingBooking}<Spinner size="small" inline />{:else}Lagre endringer{/if}
 				</button>
 			</div>
