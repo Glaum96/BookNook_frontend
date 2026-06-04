@@ -19,9 +19,14 @@ export const getFormattedDateOfDayOneMonthFromToday = () => {
 }
 
 export const getTimeOfDayConstraints = (): TimeOfDayConstraints => ({
-	start: '06:00',
-	end: '23:00',
+	start: '07:00',
+	end: '22:00',
 })
+
+export const getScrollTarget = (): string => {
+	const hour = Math.max(7, Math.min(new Date().getHours() - 1, 21))
+	return `${String(hour).padStart(2, '0')}:00`
+}
 
 export const getViews = () => {
 	const views = [createViewDay(), createViewWeek(), createViewMonthGrid(), createViewList()]

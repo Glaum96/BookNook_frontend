@@ -10,6 +10,8 @@
 	import StaticInfo from '../staticInfo/staticInfo.svelte'
 	import { theme } from '../../../stores/theme'
 	import type { Theme } from '../../../stores/theme'
+	import { mySuspension } from '../../../stores/suspension'
+	import { formatSuspensionDate } from '$lib/api/suspensions'
 
 	const navigateTo = (url: string) => {
 		goto(`${base}${url}`)
@@ -84,7 +86,12 @@
 		</a>
 
 		{#if $isAuthenticated}
-			<button id="toggleModalButton" on:click={toggleNewBookingModal}>
+			<button
+				id="toggleModalButton"
+				on:click={toggleNewBookingModal}
+				disabled={$mySuspension !== null}
+				title={$mySuspension ? `Suspendert frem til ${formatSuspensionDate($mySuspension.suspendedUntil)}` : undefined}
+			>
 				<p>Ny booking</p>
 				<span class="icon">+</span>
 			</button>

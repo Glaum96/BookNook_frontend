@@ -16,6 +16,13 @@
 	import type { CheckinImage } from '../../types/CheckinImage'
 	import { API_BASE_URL } from '$lib/config'
 	import { getUserFromLocalStorage } from '$lib/api/users'
+	import {
+		createSuspension,
+		deleteSuspension,
+		fetchAllSuspensions,
+		formatSuspensionDate
+	} from '$lib/api/suspensions'
+	import type { Suspension } from '../../types/Suspension'
 
 	const usersLoading = isLoading('users')
 	const bookingsLoading = isLoading('bookings')
@@ -141,6 +148,97 @@
 		editBookingModalOpen = true
 	}
 
+	// ── Suspension modal ─────────────────────────────────────────────────────
+	let suspensions: Suspension[] = []
+	let suspendModalOpen = false
+	let suspendTargetUser: User | null = null
+	let suspendDays = ''
+	let suspendUntilDate = ''
+	let suspendReason = ''
+	let suspendError = ''
+	let savingSuspend = false
+
+	// Affected bookings modal
+	let affectedModalOpen = false
+	let affectedBookings: Booking[] = []
+	let affectedTargetUserId = ''
+	let deletingAffected = false
+
+	function isSuspended(userId: string): boolean {
+		return suspensions.some((s) => s.userId === userId)
+	}
+
+	function getSuspension(userId: string): Suspension | undefined {
+		return suspensions.find((s) => s.userId === userId)
+	}
+
+	function openSuspendModal(user: User) {
+		suspendTargetUser = user
+		suspendDays = ''
+		suspendUntilDate = ''
+		suspendReason = ''
+		suspendError = ''
+		suspendModalOpen = true
+	}
+
+	function syncDaysToDate() {
+		const n = parseInt(suspendDays)
+		if (!isNaN(n) && n > 0) {
+			const d = new Date()
+			d.setDate(d.getDate() + n)
+			suspendUntilDate = d.toLocaleDateString('sv-SE')
+		}
+	}
+
+	function syncDateToDays() {
+		if (suspendUntilDate) {
+			const diff = new Date(suspendUntilDate).getTime() - Date.now()
+			const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
+			if (days > 0) suspendDays = String(days)
+		}
+	}
+
+	async function handleCreateSuspension() {
+		if (!suspendTargetUser || !suspendUntilDate) {
+			suspendError = 'Velg en sluttdato for suspensjonen.'
+			return
+		}
+		savingSuspend = true
+		suspendError = ''
+		const until = new Date(`${suspendUntilDate}T23:59:59`).toISOString()
+		const result = await createSuspension(suspendTargetUser.id, until, suspendReason || undefined)
+		savingSuspend = false
+		if (!result.success) {
+			suspendError = result.error ?? 'Kunne ikke opprette suspensjon.'
+			return
+		}
+		if (result.suspension) suspensions = [...suspensions, result.suspension]
+		suspendModalOpen = false
+		if (result.affectedBookings && result.affectedBookings.length > 0) {
+			affectedBookings = result.affectedBookings
+			affectedTargetUserId = suspendTargetUser.id
+			affectedModalOpen = true
+		}
+	}
+
+	async function handleRemoveSuspension(userId: string) {
+		const ok = await deleteSuspension(userId)
+		if (ok) {
+			suspensions = suspensions.filter((s) => s.userId !== userId)
+		}
+	}
+
+	async function handleDeleteAffectedBookings() {
+		deletingAffected = true
+		for (const b of affectedBookings) {
+			await deleteBooking(b.id)
+		}
+		bookings = await fetchAllBookings()
+		deletingAffected = false
+		affectedModalOpen = false
+		affectedBookings = []
+	}
+
 	async function handleSaveBooking() {
 		savingBooking = true
 		editBookingError = ''
@@ -179,10 +277,11 @@
 	let checkinSummary: Map<string, BookingCheckinSummary> = new Map()
 
 	onMount(async () => {
-		;[bookings, users, rules] = await Promise.all([
+		;[bookings, users, rules, suspensions] = await Promise.all([
 			fetchAllBookings(),
 			fetchAllUsers(),
-			fetchRules()
+			fetchRules(),
+			fetchAllSuspensions()
 		])
 		const summary = await fetchCheckinSummary()
 		checkinSummary = new Map(summary.map((s) => [s.bookingId, s]))
@@ -278,13 +377,28 @@
 							<td>
 								{#if user.admin}
 									<span class="badge-admin">Admin</span>
-								{:else}
+								{/if}
+								{#if isSuspended(user.id)}
+									<span class="badge-suspended" title="Suspendert frem til {formatSuspensionDate(getSuspension(user.id)?.suspendedUntil ?? '')}">Suspendert</span>
+								{/if}
+								{#if !user.admin && !isSuspended(user.id)}
 									<span class="col-muted">—</span>
 								{/if}
 							</td>
 							<td class="col-actions">
 								<div class="action-group">
 									<button class="btn-icon" on:click={() => openEditUserModal(user)}>Rediger</button>
+									{#if isSuspended(user.id)}
+										<button
+											class="btn-icon btn-icon--warning"
+											on:click={() => handleRemoveSuspension(user.id)}
+										>Fjern suspensjon</button>
+									{:else}
+										<button
+											class="btn-icon"
+											on:click={() => openSuspendModal(user)}
+										>Suspender</button>
+									{/if}
 									<button
 										class="btn-icon btn-icon--danger"
 										on:click={() => handleDeleteUser(user.id)}
@@ -529,6 +643,78 @@
 				<button class="cancel-button" on:click={() => (editBookingModalOpen = false)}>Avbryt</button>
 				<button class="save-button" on:click={handleSaveBooking} disabled={savingBooking}>
 					{#if savingBooking}<Spinner size="small" inline />{:else}Lagre endringer{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Suspend user modal -->
+{#if suspendModalOpen && suspendTargetUser}
+	<div class="modal-backdrop" on:click={() => (suspendModalOpen = false)} role="dialog" aria-modal="true">
+		<div class="edit-modal" on:click|stopPropagation>
+			<h3 class="modal-title">Suspender {suspendTargetUser.name}</h3>
+			{#if suspendError}
+				<p class="feedback feedback--error">{suspendError}</p>
+			{/if}
+			<div class="form-grid">
+				<p class="suspend-help">Velg hvor lenge brukeren skal være suspendert fra å opprette nye bookinger.</p>
+				<div class="form-row-2">
+					<label class="form-label">
+						Antall dager
+						<input
+							class="form-input"
+							type="number"
+							min="1"
+							bind:value={suspendDays}
+							on:input={syncDaysToDate}
+							placeholder="f.eks. 14"
+						/>
+					</label>
+					<label class="form-label">
+						Eller velg dato
+						<input
+							class="form-input"
+							type="date"
+							bind:value={suspendUntilDate}
+							min={new Date().toLocaleDateString('sv-SE')}
+							on:change={syncDateToDays}
+						/>
+					</label>
+				</div>
+				<label class="form-label">
+					Årsak (valgfritt)
+					<input class="form-input" type="text" bind:value={suspendReason} placeholder="Angis til brukeren" />
+				</label>
+			</div>
+			<div class="modal-actions">
+				<button class="cancel-button" on:click={() => (suspendModalOpen = false)}>Avbryt</button>
+				<button class="save-button save-button--warning" on:click={handleCreateSuspension} disabled={savingSuspend}>
+					{#if savingSuspend}<Spinner size="small" inline />{:else}Suspender{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Affected bookings modal -->
+{#if affectedModalOpen}
+	<div class="modal-backdrop" on:click={() => (affectedModalOpen = false)} role="dialog" aria-modal="true">
+		<div class="edit-modal" on:click|stopPropagation>
+			<h3 class="modal-title">Berørte bookinger</h3>
+			<p class="suspend-help">
+				Brukeren har <strong>{affectedBookings.length}</strong> booking{affectedBookings.length !== 1 ? 'er' : ''} som overlapper med suspensjonsperioden:
+			</p>
+			<ul class="affected-list">
+				{#each affectedBookings as b (b.id)}
+					<li>{getDate(b.startTime)} kl. {getTime(b.startTime)}–{getTime(b.endTime)}</li>
+				{/each}
+			</ul>
+			<p class="suspend-help">Vil du slette disse bookingene?</p>
+			<div class="modal-actions">
+				<button class="cancel-button" on:click={() => (affectedModalOpen = false)}>Behold dem</button>
+				<button class="save-button save-button--danger" on:click={handleDeleteAffectedBookings} disabled={deletingAffected}>
+					{#if deletingAffected}<Spinner size="small" inline />{:else}Slett bookinger{/if}
 				</button>
 			</div>
 		</div>
@@ -905,6 +1091,41 @@
 	.save-button:disabled {
 		opacity: 0.55;
 		cursor: not-allowed;
+	}
+
+	.save-button--warning {
+		background: #e67e22;
+	}
+
+	.save-button--danger {
+		background: var(--color-danger-text, #c0392b);
+	}
+
+	.btn-icon--warning {
+		border-color: color-mix(in srgb, #e67e22 50%, transparent);
+		color: #a04000;
+	}
+
+	.btn-icon--warning:hover {
+		background: color-mix(in srgb, #e67e22 10%, transparent);
+		color: #a04000;
+	}
+
+	.suspend-help {
+		margin: 0;
+		font-size: 0.875rem;
+		color: var(--text-secondary);
+		line-height: 1.5;
+	}
+
+	.affected-list {
+		margin: 0;
+		padding: 0 0 0 1.2rem;
+		font-size: 0.9rem;
+		color: var(--text-body);
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
 	}
 
 	/* ── Feedback messages ───────────────────────────────────────────────── */

@@ -154,6 +154,20 @@
   color: var(--color-danger-text);
 }
 
+/* ── Suspended badge ─────────────────────────────────────────────────── */
+.badge-suspended {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: color-mix(in srgb, #e67e22 15%, transparent);
+  color: #a04000;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left: 0.3rem;
+}
+
 /* ── Admin badge ─────────────────────────────────────────────────────── */
 .badge-admin {
   display: inline-block;

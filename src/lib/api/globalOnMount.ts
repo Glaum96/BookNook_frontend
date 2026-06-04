@@ -5,6 +5,8 @@ import { checkIncludePastBookings, getIncludePastBookingsFromLocalStorage } from
 import type { Booking } from '../../types/Booking'
 import type { User } from '../../types/User'
 import { fetchMyBookings } from './bookings'
+import { fetchMySuspension } from './suspensions'
+import { mySuspension } from '../../stores/suspension'
 import { addUserToLocalStorage, getUserFromLocalStorage } from './users'
 
 interface IGlobalOnMountResult {
@@ -16,6 +18,7 @@ export const globalOnMount = async (): Promise<IGlobalOnMountResult> => {
 	checkAuth()
 	checkAdminUser()
 	checkIncludePastBookings()
+	mySuspension.set(await fetchMySuspension())
 	if (!isAuthenticated) {
 		goto(`${base}/login`)
 	}

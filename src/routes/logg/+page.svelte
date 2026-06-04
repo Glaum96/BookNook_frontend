@@ -224,4 +224,14 @@
 		background: color-mix(in srgb, #8e44ad 15%, transparent);
 		color: #6c3483;
 	}
+
+	.action-badge--user_suspended {
+		background: color-mix(in srgb, #e67e22 15%, transparent);
+		color: #a04000;
+	}
+
+	.action-badge--user_unsuspended {
+		background: color-mix(in srgb, #7f8c8d 15%, transparent);
+		color: #555;
+	}
 </style>

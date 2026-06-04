@@ -14,6 +14,7 @@
 		getFormattedDateOfDayOneMonthFromToday,
 		getFormattedDateOfFirstDayOfPreviousMonth,
 		getTimeOfDayConstraints,
+		getScrollTarget,
 		getViews,
 	} from './utils'
 	import { getBookings } from './getBookings'
@@ -28,11 +29,6 @@
 	let initialLoadComplete = false
 	let bookings: ScheduleXEvent[] = []
 
-	const now = new Date()
-	const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
-
-	const scrollController = createScrollControllerPlugin({ initialScroll: currentTime })
-
 	function getEffectiveIsDark(t: string): boolean {
 		if (t === 'dark') return true
 		if (t === 'light') return false
@@ -40,25 +36,28 @@
 		return false
 	}
 
-	const calendarConfig = {
-		views: getViews(),
-		locale: 'nb-NO',
-		isDark: false,
-		defaultView: viewWeek.name,
-		showWeekNumbers: true,
-		dayBoundaries: getTimeOfDayConstraints(),
-		minDate: getFormattedDateOfFirstDayOfPreviousMonth(),
-		maxDate: getFormattedDateOfDayOneMonthFromToday(),
-		weekOptions: {
-			eventWidth: 100,
-			nDays: 7,
-			eventOverlap: false,
-		},
-		plugins: [scrollController],
-		events: bookings,
+	function buildCalendarConfig(isDark: boolean, events: ScheduleXEvent[]) {
+		return {
+			views: getViews(),
+			locale: 'nb-NO',
+			isDark,
+			defaultView: viewWeek.name,
+			showWeekNumbers: true,
+			dayBoundaries: getTimeOfDayConstraints(),
+			minDate: getFormattedDateOfFirstDayOfPreviousMonth(),
+			maxDate: getFormattedDateOfDayOneMonthFromToday(),
+			weekOptions: {
+				eventWidth: 100,
+				nDays: 7,
+				eventOverlap: false,
+				gridHeight: 600,
+			},
+			plugins: [createScrollControllerPlugin({ initialScroll: getScrollTarget() })],
+			events,
+		}
 	}
 
-	let calendarApp = createCalendar(calendarConfig) as ReturnType<typeof createCalendar>
+	let calendarApp = createCalendar(buildCalendarConfig(false, [])) as ReturnType<typeof createCalendar>
 
 	onMount(async () => {
 		try {
@@ -66,7 +65,7 @@
 			bookings = bookingsFromServer
 
 			const isDark = getEffectiveIsDark($theme)
-			calendarApp = createCalendar({ ...calendarConfig, isDark, events: bookings })
+			calendarApp = createCalendar(buildCalendarConfig(isDark, bookings))
 			initialLoadComplete = true
 		} catch (error) {
 			console.error('Error fetching bookings:', error)
@@ -76,7 +75,7 @@
 		const unsubscribeTheme = theme.subscribe((t) => {
 			if (initialLoadComplete) {
 				const isDark = getEffectiveIsDark(t)
-				calendarApp = createCalendar({ ...calendarConfig, isDark, events: bookings })
+				calendarApp = createCalendar(buildCalendarConfig(isDark, bookings))
 			}
 		})
 

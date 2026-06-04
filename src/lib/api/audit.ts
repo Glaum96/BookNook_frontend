@@ -20,7 +20,9 @@ const ACTION_LABELS: Record<string, string> = {
 	USER_DELETED: 'Bruker slettet',
 	CHECKIN_IMAGE_UPLOADED: 'Check-in bilde lastet opp',
 	CHECKOUT_IMAGE_UPLOADED: 'Check-out bilde lastet opp',
-	CHECKIN_IMAGE_DELETED: 'Bilde slettet'
+	CHECKIN_IMAGE_DELETED: 'Bilde slettet',
+	USER_SUSPENDED: 'Bruker suspendert',
+	USER_UNSUSPENDED: 'Suspensjon fjernet'
 }
 
 export function formatAction(action: string): string {
