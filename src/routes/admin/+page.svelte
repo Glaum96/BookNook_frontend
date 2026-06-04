@@ -23,12 +23,33 @@
 		formatSuspensionDate
 	} from '$lib/api/suspensions'
 	import type { Suspension } from '../../types/Suspension'
+	import {
+		fetchBlockedDates,
+		addBlockedDate,
+		deleteBlockedDate,
+		type BlockedDate
+	} from '$lib/api/blockedDates'
 
 	const usersLoading = isLoading('users')
 	const bookingsLoading = isLoading('bookings')
 	const rulesLoading = isLoading('rules')
 	const deleteBookingLoading = isLoading('deleteBooking')
 	const deleteUserLoading = isLoading('deleteUser')
+
+	// ── Collapsible panels ───────────────────────────────────────────────
+	function loadCollapsed(key: string, defaultVal: boolean): boolean {
+		try { return JSON.parse(localStorage.getItem(key) ?? String(defaultVal)) } catch { return defaultVal }
+	}
+	let rulesCollapsed = loadCollapsed('adminCollapsed_rules', false)
+	let usersCollapsed = loadCollapsed('adminCollapsed_users', false)
+	let bookingsCollapsed = loadCollapsed('adminCollapsed_bookings', false)
+	let blockedDatesCollapsed = loadCollapsed('adminCollapsed_blockedDates', false)
+
+	function toggleCollapse(key: string, current: boolean): boolean {
+		const next = !current
+		localStorage.setItem(key, String(next))
+		return next
+	}
 
 	let deletingBookingId: string | null = null
 	let deletingUserId: string | null = null
@@ -289,13 +310,41 @@
 	let bookings: Booking[] = []
 	let rules: Rule[] = []
 	let checkinSummary: Map<string, BookingCheckinSummary> = new Map()
+	let blockedDates: BlockedDate[] = []
+
+	// ── Blocked dates form ───────────────────────────────────────────────
+	let newBlockedDate = ''
+	let newBlockedLabel = ''
+	let addingBlockedDate = false
+	let blockedDateError = ''
+
+	async function handleAddBlockedDate() {
+		if (!newBlockedDate) return
+		addingBlockedDate = true
+		blockedDateError = ''
+		const result = await addBlockedDate(newBlockedDate, newBlockedLabel || undefined)
+		if (result) {
+			blockedDates = [...blockedDates, result]
+			newBlockedDate = ''
+			newBlockedLabel = ''
+		} else {
+			blockedDateError = 'Kunne ikke legge til dato.'
+		}
+		addingBlockedDate = false
+	}
+
+	async function handleDeleteBlockedDate(id: string) {
+		const ok = await deleteBlockedDate(id)
+		if (ok) blockedDates = blockedDates.filter((d) => d.id !== id)
+	}
 
 	onMount(async () => {
-		;[bookings, users, rules, suspensions] = await Promise.all([
+		;[bookings, users, rules, suspensions, blockedDates] = await Promise.all([
 			fetchAllBookings(),
 			fetchAllUsers(),
 			fetchRules(),
-			fetchAllSuspensions()
+			fetchAllSuspensions(),
+			fetchBlockedDates()
 		])
 		const summary = await fetchCheckinSummary()
 		checkinSummary = new Map(summary.map((s) => [s.bookingId, s]))
@@ -395,10 +444,14 @@
 
 	<!-- Rules -->
 	<section class="admin-panel">
-		<div class="panel-header">
+		<button class="panel-header panel-header--toggle" on:click={() => (rulesCollapsed = toggleCollapse('adminCollapsed_rules', rulesCollapsed))}>
 			<h2 class="panel-title">Regler</h2>
-			<span class="panel-count">{rules.length} regler</span>
-		</div>
+			<div class="panel-header-right">
+				<span class="panel-count">{rules.length} regler</span>
+				<span class="collapse-arrow" class:collapsed={rulesCollapsed}>▾</span>
+			</div>
+		</button>
+		{#if !rulesCollapsed}
 		{#if $rulesLoading && rules.length === 0}
 			<div class="loading-container">
 				<Spinner size="medium" label="Laster regler..." />
@@ -460,14 +513,19 @@
 				</div>
 			{/each}
 		</div>
+		{/if}
 	</section>
 
 	<!-- Users -->
 	<section class="admin-panel">
-		<div class="panel-header">
+		<button class="panel-header panel-header--toggle" on:click={() => (usersCollapsed = toggleCollapse('adminCollapsed_users', usersCollapsed))}>
 			<h2 class="panel-title">Brukere</h2>
-			<span class="panel-count">{users.length} brukere</span>
-		</div>
+			<div class="panel-header-right">
+				<span class="panel-count">{users.length} brukere</span>
+				<span class="collapse-arrow" class:collapsed={usersCollapsed}>▾</span>
+			</div>
+		</button>
+		{#if !usersCollapsed}
 		{#if $usersLoading && users.length === 0}
 			<div class="loading-container">
 				<Spinner size="medium" label="Laster brukere..." />
@@ -541,14 +599,19 @@
 				</tbody>
 			</table>
 		{/if}
+		{/if}
 	</section>
 
 	<!-- Bookings -->
 	<section class="admin-panel">
-		<div class="panel-header">
+		<button class="panel-header panel-header--toggle" on:click={() => (bookingsCollapsed = toggleCollapse('adminCollapsed_bookings', bookingsCollapsed))}>
 			<h2 class="panel-title">Bookinger</h2>
-			<span class="panel-count">{bookings.length} bookinger</span>
-		</div>
+			<div class="panel-header-right">
+				<span class="panel-count">{bookings.length} bookinger</span>
+				<span class="collapse-arrow" class:collapsed={bookingsCollapsed}>▾</span>
+			</div>
+		</button>
+		{#if !bookingsCollapsed}
 		{#if $bookingsLoading && bookings.length === 0}
 			<div class="loading-container">
 				<Spinner size="medium" label="Laster bookinger..." />
@@ -616,6 +679,57 @@
 					{/each}
 				</tbody>
 			</table>
+		{/if}
+		{/if}
+	</section>
+
+	<!-- Blocked dates -->
+	<section class="admin-panel">
+		<button class="panel-header panel-header--toggle" on:click={() => (blockedDatesCollapsed = toggleCollapse('adminCollapsed_blockedDates', blockedDatesCollapsed))}>
+			<h2 class="panel-title">Reserverte datoer</h2>
+			<div class="panel-header-right">
+				<span class="panel-count">{blockedDates.length} datoer</span>
+				<span class="collapse-arrow" class:collapsed={blockedDatesCollapsed}>▾</span>
+			</div>
+		</button>
+		{#if !blockedDatesCollapsed}
+		<div class="blocked-dates-body">
+			<form class="blocked-date-form" on:submit|preventDefault={handleAddBlockedDate}>
+				<input
+					class="form-input"
+					type="date"
+					bind:value={newBlockedDate}
+					required
+					disabled={addingBlockedDate}
+				/>
+				<input
+					class="form-input"
+					type="text"
+					bind:value={newBlockedLabel}
+					placeholder="Etikett (valgfri, f.eks. 17. mai)"
+					disabled={addingBlockedDate}
+				/>
+				<button class="btn-icon" type="submit" disabled={addingBlockedDate || !newBlockedDate}>
+					{#if addingBlockedDate}<Spinner size="small" inline />{:else}Legg til{/if}
+				</button>
+			</form>
+			{#if blockedDateError}
+				<p class="blocked-date-error">{blockedDateError}</p>
+			{/if}
+			{#if blockedDates.length === 0}
+				<p class="empty-state">Ingen reserverte datoer</p>
+			{:else}
+				<ul class="blocked-date-list">
+					{#each blockedDates.sort((a, b) => a.date.localeCompare(b.date)) as bd (bd.id)}
+						<li class="blocked-date-item">
+							<span class="blocked-date-date">{bd.date}</span>
+							{#if bd.label}<span class="blocked-date-label">{bd.label}</span>{/if}
+							<button class="btn-icon btn-icon--danger" on:click={() => handleDeleteBlockedDate(bd.id)}>Fjern</button>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</div>
 		{/if}
 	</section>
 </div>
