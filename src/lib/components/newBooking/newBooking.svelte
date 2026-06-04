@@ -12,30 +12,33 @@
 
 	const postBookingLoading = isLoading('postBooking')
 
-	function formatLocalDatetime(date: Date): string {
-		const pad = (n: number) => String(n).padStart(2, '0')
-		return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:00`
+	function pad(n: number) { return String(n).padStart(2, '0') }
+
+	function todayString(): string {
+		const d = new Date()
+		return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 	}
 
-	function getInitialStart(): string {
+	function getInitialStartTime(): string {
 		const d = new Date()
 		d.setHours(d.getHours() + 1, 0, 0, 0)
-		return formatLocalDatetime(d)
+		return `${pad(d.getHours())}:00`
 	}
 
-	function getInitialEnd(): string {
+	function getInitialEndTime(): string {
 		const d = new Date()
 		d.setHours(d.getHours() + 3, 0, 0, 0)
-		return formatLocalDatetime(d)
+		return `${pad(d.getHours())}:00`
 	}
 
-	let startDateTime = getInitialStart()
-	let endDateTime = getInitialEnd()
+	let bookingDate = todayString()
+	let startTime = getInitialStartTime()
+	let endTime = getInitialEndTime()
 	let responsibleName = user.name ?? ''
 	let responsibleNumber = user.phoneNumber ?? ''
 	let ruleErrors: string[] = []
 
-	$: endBeforeStart = startDateTime && endDateTime && endDateTime <= startDateTime
+	$: endBeforeStart = startTime && endTime && endTime <= startTime
 
 	onMount(() => {
 		const modalContent = document.querySelector('.modal-content')
@@ -51,8 +54,8 @@
 		ruleErrors = []
 		const newBooking: Booking = {
 			id: '',
-			startTime: new Date(startDateTime).toISOString(),
-			endTime: new Date(endDateTime).toISOString(),
+			startTime: new Date(`${bookingDate}T${startTime}:00`).toISOString(),
+			endTime: new Date(`${bookingDate}T${endTime}:00`).toISOString(),
 			userId: user.id,
 			responsibleName,
 			responsibleNumber,
@@ -71,16 +74,22 @@
 	<h3 class="title">Legg inn booking</h3>
 	<form on:submit|preventDefault={handleSubmit}>
 		<div class="input-group">
-			<label for="startDateTime">Fra</label>
-			<input id="startDateTime" type="datetime-local" bind:value={startDateTime} required disabled={$postBookingLoading} />
+			<label for="bookingDate">Dato</label>
+			<input id="bookingDate" type="date" bind:value={bookingDate} required disabled={$postBookingLoading} />
 		</div>
-		<div class="input-group">
-			<label for="endDateTime">Til</label>
-			<input id="endDateTime" type="datetime-local" bind:value={endDateTime} required disabled={$postBookingLoading} />
-			{#if endBeforeStart}
-				<p class="field-error">Sluttidspunkt må være etter starttidspunkt</p>
-			{/if}
+		<div class="form-row-2">
+			<div class="input-group">
+				<label for="startTime">Fra</label>
+				<input id="startTime" type="time" bind:value={startTime} required disabled={$postBookingLoading} />
+			</div>
+			<div class="input-group">
+				<label for="endTime">Til</label>
+				<input id="endTime" type="time" bind:value={endTime} required disabled={$postBookingLoading} />
+			</div>
 		</div>
+		{#if endBeforeStart}
+			<p class="field-error">Sluttidspunkt må være etter starttidspunkt</p>
+		{/if}
 		<div class="input-group">
 			<label for="responsibleName">Ansvarlig</label>
 			<input id="responsibleName" type="text" bind:value={responsibleName} placeholder="Navn" required disabled={$postBookingLoading} />
@@ -123,6 +132,12 @@
 		margin-bottom: 1rem;
 	}
 
+	.form-row-2 {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.75rem;
+	}
+
 	label {
 		display: block;
 		margin-bottom: 0.25rem;
@@ -149,7 +164,7 @@
 	}
 
 	.field-error {
-		margin: 0.25rem 0 0;
+		margin: -0.5rem 0 0.75rem;
 		font-size: 0.85rem;
 		color: var(--color-error);
 	}

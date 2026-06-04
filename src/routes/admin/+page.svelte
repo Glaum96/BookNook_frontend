@@ -124,6 +124,8 @@
 	let editBookingSuccess = ''
 	let savingBooking = false
 
+	$: editBookingEndBeforeStart = editBookingStartTime && editBookingEndTime && editBookingEndTime <= editBookingStartTime
+
 	function toLocalDateString(isoString: string): string {
 		const d = new Date(isoString)
 		return d.toLocaleDateString('sv-SE') // yields YYYY-MM-DD
@@ -245,6 +247,7 @@
 	}
 
 	async function handleSaveBooking() {
+		if (editBookingEndBeforeStart) return
 		savingBooking = true
 		editBookingError = ''
 		editBookingSuccess = ''
@@ -625,6 +628,9 @@
 						<input class="form-input" type="time" bind:value={editBookingEndTime} />
 					</label>
 				</div>
+				{#if editBookingEndBeforeStart}
+					<p class="feedback feedback--error">Sluttidspunkt må være etter starttidspunkt</p>
+				{/if}
 				<div class="form-divider"></div>
 				<label class="form-label">
 					Ansvarlig bruker
@@ -653,7 +659,7 @@
 			</div>
 			<div class="modal-actions">
 				<button class="cancel-button" on:click={() => (editBookingModalOpen = false)}>Avbryt</button>
-				<button class="save-button" on:click={handleSaveBooking} disabled={savingBooking}>
+				<button class="save-button" on:click={handleSaveBooking} disabled={savingBooking || !!editBookingEndBeforeStart}>
 					{#if savingBooking}<Spinner size="small" inline />{:else}Lagre endringer{/if}
 				</button>
 			</div>
