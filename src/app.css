@@ -133,6 +133,10 @@
   --button-text-color: #c8c8d8;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   min-height: 100vh;
   margin: 0;
