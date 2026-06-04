@@ -47,6 +47,28 @@ export async function fetchMyBookings(userId: string, includePastBookings: boole
 	}
 }
 
+export async function updateBooking(booking: Booking): Promise<{ success: boolean; errors?: string[] }> {
+	setLoading('updateBooking', true)
+	try {
+		const token = getAuthToken()
+		const response = await fetch(`${API_BASE_URL}/api/updateBooking/${booking.id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(booking),
+		})
+		const data = await response.json().catch(() => ({}))
+		if (response.ok) return { success: true }
+		return { success: false, errors: data.errors ?? ['Kunne ikke oppdatere booking.'] }
+	} catch {
+		return { success: false, errors: ['Kunne ikke koble til serveren.'] }
+	} finally {
+		setLoading('updateBooking', false)
+	}
+}
+
 export async function deleteBooking(bookingId: string) {
 	setLoading('deleteBooking', true)
 	try {

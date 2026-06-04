@@ -12,9 +12,11 @@ export interface AuditLog {
 
 const ACTION_LABELS: Record<string, string> = {
 	BOOKING_CREATED: 'Booking opprettet',
+	BOOKING_UPDATED: 'Booking endret',
 	BOOKING_DELETED: 'Booking slettet',
 	USER_REGISTERED: 'Bruker registrert',
 	USER_UPDATED: 'Bruker oppdatert',
+	USER_ADMIN_CHANGED: 'Admin-status endret',
 	USER_DELETED: 'Bruker slettet',
 	CHECKIN_IMAGE_UPLOADED: 'Check-in bilde lastet opp',
 	CHECKOUT_IMAGE_UPLOADED: 'Check-out bilde lastet opp',

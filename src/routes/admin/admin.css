@@ -1,60 +1,188 @@
 .admin-container {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  padding: 1rem;
-  overflow-x: auto;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
-.admin-heading {
-  color: var(--color-primary);
-}
-
-.users-admin-panel,
-.bookings {
-  margin: 0 10px;
+/* ── Section panels ─────────────────────────────────────────────────── */
+.admin-panel {
   background-color: var(--bg-card);
-  padding: 32px;
-  border-radius: 10px;
-  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px var(--shadow-sm);
+  overflow: hidden;
 }
 
-.admin-user-table,
-.admin-booking-table {
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-separator);
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-body);
+  letter-spacing: 0.01em;
+}
+
+.panel-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--bg-card-alt);
+  color: var(--text-secondary);
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────── */
+.admin-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1rem 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
+}
+
+.admin-table thead th {
+  background: var(--bg-card-alt);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.65rem 1rem;
   text-align: left;
-}
-
-.admin-user-table th,
-.admin-user-table td,
-.admin-booking-table th,
-.admin-booking-table td {
-  border: 1px solid var(--bg-card-alt);
-  padding: 8px;
-}
-
-.admin-user-table th,
-.admin-booking-table th {
-  background-color: var(--bg-card-alt);
-  color: var(--text-body);
-}
-
-.delete-button {
-  background-color: var(--color-danger-bg);
-  color: var(--color-danger-text);
-  border-radius: 5px;
-  border: none;
-  font-size: 1rem;
-  padding: 0.5rem 0.75rem;
-  min-height: 36px;
-  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
   white-space: nowrap;
 }
 
-.button-container{
+.admin-table tbody tr {
+  border-bottom: 1px solid var(--border-separator);
+  transition: background 0.12s;
+}
+
+.admin-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover {
+  background: var(--hover-bg);
+}
+
+.admin-table tbody td {
+  padding: 0.75rem 1rem;
+  color: var(--text-body);
+  vertical-align: middle;
+}
+
+.admin-table .col-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── Inline action button groups ───────────────────────────────────── */
+.action-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ── Checkin pill buttons ───────────────────────────────────────────── */
+.checkin-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: none;
+  border-radius: 20px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.checkin-pill:hover {
+  opacity: 0.8;
+}
+
+.checkin-pill--ok {
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+}
+
+.checkin-pill--missing {
+  background: color-mix(in srgb, #e67e22 15%, transparent);
+  color: #a04000;
+}
+
+/* ── Edit / Delete icon buttons ─────────────────────────────────────── */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.btn-icon:hover {
+  background: var(--hover-bg);
+  color: var(--text-body);
+}
+
+.btn-icon--danger {
+  border-color: color-mix(in srgb, var(--color-danger-text) 40%, transparent);
+  color: var(--color-danger-text);
+}
+
+.btn-icon--danger:hover {
+  background: color-mix(in srgb, var(--color-danger-bg) 40%, transparent);
+  color: var(--color-danger-text);
+}
+
+/* ── Admin badge ─────────────────────────────────────────────────────── */
+.badge-admin {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Missing-images row highlight ────────────────────────────────────── */
+.row--missing-images {
+  background-color: color-mix(in srgb, #e67e22 6%, transparent) !important;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────── */
+.empty-state {
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ── Loading ─────────────────────────────────────────────────────────── */
+.loading-container {
   display: flex;
   justify-content: center;
+  padding: 2.5rem;
 }

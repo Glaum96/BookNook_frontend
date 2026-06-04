@@ -214,4 +214,14 @@
 		background: color-mix(in srgb, #7f8c8d 15%, transparent);
 		color: #555;
 	}
+
+	.action-badge--booking_updated {
+		background: color-mix(in srgb, #2980b9 15%, transparent);
+		color: #2980b9;
+	}
+
+	.action-badge--user_admin_changed {
+		background: color-mix(in srgb, #8e44ad 15%, transparent);
+		color: #6c3483;
+	}
 </style>

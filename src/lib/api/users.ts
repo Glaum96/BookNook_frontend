@@ -74,6 +74,25 @@ export async function updateUser(user: User) {
 	}
 }
 
+export async function setUserAdmin(userId: string, isAdmin: boolean): Promise<{ success: boolean; error?: string }> {
+	try {
+		const token = getAuthToken()
+		const response = await fetch(`${API_BASE_URL}/api/users/${userId}/admin`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ isAdmin }),
+		})
+		const data = await response.json().catch(() => ({}))
+		if (response.ok) return { success: true }
+		return { success: false, error: data.error ?? 'Kunne ikke endre admin-status.' }
+	} catch {
+		return { success: false, error: 'Kunne ikke koble til serveren.' }
+	}
+}
+
 export async function deleteUser(userId: string) {
 	setLoading('deleteUser', true)
 	try {
