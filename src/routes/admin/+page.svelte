@@ -157,6 +157,7 @@
 	let suspendReason = ''
 	let suspendError = ''
 	let savingSuspend = false
+	let removingSuspensionUserId: string | null = null
 
 	// Affected bookings modal
 	let affectedModalOpen = false
@@ -164,8 +165,7 @@
 	let affectedTargetUserId = ''
 	let deletingAffected = false
 
-	// Remove suspension feedback
-	let removedSuspensionUserId: string | null = null
+
 
 	function isSuspended(userId: string): boolean {
 		return suspensions.some((s) => s.userId === userId)
@@ -221,15 +221,18 @@
 			affectedBookings = result.affectedBookings
 			affectedTargetUserId = suspendTargetUser.id
 			affectedModalOpen = true
+		} else {
+			location.reload()
 		}
 	}
 
 	async function handleRemoveSuspension(userId: string) {
+		removingSuspensionUserId = userId
 		const ok = await deleteSuspension(userId)
 		if (ok) {
-			suspensions = suspensions.filter((s) => s.userId !== userId)
-			removedSuspensionUserId = userId
-			setTimeout(() => (removedSuspensionUserId = null), 2500)
+			location.reload()
+		} else {
+			removingSuspensionUserId = null
 		}
 	}
 
@@ -238,10 +241,7 @@
 		for (const b of affectedBookings) {
 			await deleteBooking(b.id)
 		}
-		bookings = await fetchAllBookings()
-		deletingAffected = false
-		affectedModalOpen = false
-		affectedBookings = []
+		location.reload()
 	}
 
 	async function handleSaveBooking() {
@@ -393,13 +393,18 @@
 							<td class="col-actions">
 								<div class="action-group">
 									<button class="btn-icon" on:click={() => openEditUserModal(user)}>Rediger</button>
-									{#if removedSuspensionUserId === user.id}
-										<span class="remove-suspension-ok">✓ Suspensjon fjernet</span>
-									{:else if isSuspended(user.id)}
+									{#if isSuspended(user.id)}
 										<button
 											class="btn-icon btn-icon--warning"
 											on:click={() => handleRemoveSuspension(user.id)}
-										>Fjern suspensjon</button>
+											disabled={removingSuspensionUserId === user.id}
+										>
+											{#if removingSuspensionUserId === user.id}
+												<Spinner size="small" inline />
+											{:else}
+												Fjern suspensjon
+											{/if}
+										</button>
 									{:else}
 										<button
 											class="btn-icon"
@@ -719,7 +724,7 @@
 			</ul>
 			<p class="suspend-help">Vil du slette disse bookingene?</p>
 			<div class="modal-actions">
-				<button class="cancel-button" on:click={() => (affectedModalOpen = false)}>Behold dem</button>
+				<button class="cancel-button" on:click={() => location.reload()}>Behold dem</button>
 				<button class="save-button save-button--danger" on:click={handleDeleteAffectedBookings} disabled={deletingAffected}>
 					{#if deletingAffected}<Spinner size="small" inline />{:else}Slett bookinger{/if}
 				</button>
@@ -1106,13 +1111,6 @@
 
 	.save-button--danger {
 		background: var(--color-danger-text, #c0392b);
-	}
-
-	.remove-suspension-ok {
-		font-size: 0.8rem;
-		font-weight: 600;
-		color: var(--color-success, #2a7a2a);
-		white-space: nowrap;
 	}
 
 	.btn-icon--warning {

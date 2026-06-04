@@ -8,6 +8,8 @@
 	import { isLoading } from '../../../stores/loading'
 	import Spinner from '../spinner/Spinner.svelte'
 	import CheckinSection from '../checkin/CheckinSection.svelte'
+	import { mySuspension } from '../../../stores/suspension'
+	import { formatSuspensionDate } from '$lib/api/suspensions'
 
 	export let userId: string
 	export let bookings: Booking[]
@@ -61,17 +63,22 @@
 				<p><strong>Telefonnummer: </strong> {booking.responsibleNumber}</p>
 				<CheckinSection {booking} isLatestBooking={booking.id === latestBookingId} />
 				{#if new Date(booking.endTime) > new Date()}
-					<button
-						class="delete-button"
-						on:click={() => handleDeleteBooking(booking.id)}
-						disabled={$deleteBookingLoading && deletingBookingId === booking.id}
+					<span
+						title={$mySuspension ? `Kan ikke redigere bookinger mens du er suspendert frem til ${formatSuspensionDate($mySuspension.suspendedUntil)}` : undefined}
 					>
-						{#if $deleteBookingLoading && deletingBookingId === booking.id}
-							<Spinner size="small" inline />
-						{:else}
-							Slett booking
-						{/if}
-					</button>
+						<button
+							class="delete-button"
+							on:click={() => handleDeleteBooking(booking.id)}
+							disabled={($deleteBookingLoading && deletingBookingId === booking.id) || $mySuspension !== null}
+							class:suspended={$mySuspension !== null}
+						>
+							{#if $deleteBookingLoading && deletingBookingId === booking.id}
+								<Spinner size="small" inline />
+							{:else}
+								Slett booking
+							{/if}
+						</button>
+					</span>
 				{/if}
 			</div>
 		{:else}

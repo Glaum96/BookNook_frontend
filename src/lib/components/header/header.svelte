@@ -86,15 +86,20 @@
 		</a>
 
 		{#if $isAuthenticated}
-			<button
-				id="toggleModalButton"
-				on:click={toggleNewBookingModal}
-				disabled={$mySuspension !== null}
-				title={$mySuspension ? `Suspendert frem til ${formatSuspensionDate($mySuspension.suspendedUntil)}` : undefined}
+			<span
+				class="new-booking-wrapper"
+				title={$mySuspension ? `Du er suspendert frem til ${formatSuspensionDate($mySuspension.suspendedUntil)}` : undefined}
 			>
-				<p>Ny booking</p>
-				<span class="icon">+</span>
-			</button>
+				<button
+					id="toggleModalButton"
+					on:click={toggleNewBookingModal}
+					disabled={$mySuspension !== null}
+					class:suspended={$mySuspension !== null}
+				>
+					<p>Ny booking</p>
+					<span class="icon">+</span>
+				</button>
+			</span>
 		{/if}
 
 		<div class="nav-items" class:open={mobileNavOpen}>

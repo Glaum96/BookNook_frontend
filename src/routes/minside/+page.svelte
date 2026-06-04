@@ -8,8 +8,6 @@
 	import { globalOnMount } from '$lib/api/globalOnMount'
 	import { isLoading } from '../../stores/loading'
 	import Spinner from '$lib/components/spinner/Spinner.svelte'
-	import SuspensionBanner from '$lib/components/suspension/SuspensionBanner.svelte'
-
 	const updateUserLoading = isLoading('updateUser')
 
 	onMount(async () => {
@@ -40,7 +38,6 @@
 </svelte:head>
 
 <div class="min-side-container">
-	<SuspensionBanner />
 	<section class="min-side-user">
 		<h3 class="header">Din profil</h3>
 		<form on:submit|preventDefault={handleSubmit}>
