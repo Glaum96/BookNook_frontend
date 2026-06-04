@@ -203,28 +203,12 @@
 
 /* ── Collapsible panel headers ───────────────────────────────────────── */
 .panel-header--toggle {
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  border-bottom: 1px solid var(--border-separator);
-  border-radius: 0;
-  outline: none;
   cursor: pointer;
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: inherit;
-  font-size: inherit;
-  font-family: inherit;
-  transition: background 0.12s;
-  box-sizing: border-box;
-  min-height: unset;
+  user-select: none;
 }
 
 .panel-header--toggle:hover {
-  background: var(--hover-bg);
+  filter: brightness(0.95);
 }
 
 .panel-header--toggle:focus-visible {

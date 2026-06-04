@@ -444,13 +444,13 @@
 
 	<!-- Rules -->
 	<section class="admin-panel">
-		<button class="panel-header panel-header--toggle" on:click={() => (rulesCollapsed = toggleCollapse('adminCollapsed_rules', rulesCollapsed))}>
+		<div class="panel-header panel-header--toggle" role="button" tabindex="0" on:click={() => (rulesCollapsed = toggleCollapse('adminCollapsed_rules', rulesCollapsed))} on:keydown={(e) => e.key === 'Enter' && (rulesCollapsed = toggleCollapse('adminCollapsed_rules', rulesCollapsed))}>
 			<h2 class="panel-title">Regler</h2>
 			<div class="panel-header-right">
 				<span class="panel-count">{rules.length} regler</span>
 				<span class="collapse-arrow" class:collapsed={rulesCollapsed}>▾</span>
 			</div>
-		</button>
+		</div>
 		{#if !rulesCollapsed}
 		{#if $rulesLoading && rules.length === 0}
 			<div class="loading-container">
@@ -518,13 +518,13 @@
 
 	<!-- Users -->
 	<section class="admin-panel">
-		<button class="panel-header panel-header--toggle" on:click={() => (usersCollapsed = toggleCollapse('adminCollapsed_users', usersCollapsed))}>
+		<div class="panel-header panel-header--toggle" role="button" tabindex="0" on:click={() => (usersCollapsed = toggleCollapse('adminCollapsed_users', usersCollapsed))} on:keydown={(e) => e.key === 'Enter' && (usersCollapsed = toggleCollapse('adminCollapsed_users', usersCollapsed))}>
 			<h2 class="panel-title">Brukere</h2>
 			<div class="panel-header-right">
 				<span class="panel-count">{users.length} brukere</span>
 				<span class="collapse-arrow" class:collapsed={usersCollapsed}>▾</span>
 			</div>
-		</button>
+		</div>
 		{#if !usersCollapsed}
 		{#if $usersLoading && users.length === 0}
 			<div class="loading-container">
@@ -604,13 +604,13 @@
 
 	<!-- Bookings -->
 	<section class="admin-panel">
-		<button class="panel-header panel-header--toggle" on:click={() => (bookingsCollapsed = toggleCollapse('adminCollapsed_bookings', bookingsCollapsed))}>
+		<div class="panel-header panel-header--toggle" role="button" tabindex="0" on:click={() => (bookingsCollapsed = toggleCollapse('adminCollapsed_bookings', bookingsCollapsed))} on:keydown={(e) => e.key === 'Enter' && (bookingsCollapsed = toggleCollapse('adminCollapsed_bookings', bookingsCollapsed))}>
 			<h2 class="panel-title">Bookinger</h2>
 			<div class="panel-header-right">
 				<span class="panel-count">{bookings.length} bookinger</span>
 				<span class="collapse-arrow" class:collapsed={bookingsCollapsed}>▾</span>
 			</div>
-		</button>
+		</div>
 		{#if !bookingsCollapsed}
 		{#if $bookingsLoading && bookings.length === 0}
 			<div class="loading-container">
@@ -685,13 +685,13 @@
 
 	<!-- Blocked dates -->
 	<section class="admin-panel">
-		<button class="panel-header panel-header--toggle" on:click={() => (blockedDatesCollapsed = toggleCollapse('adminCollapsed_blockedDates', blockedDatesCollapsed))}>
+		<div class="panel-header panel-header--toggle" role="button" tabindex="0" on:click={() => (blockedDatesCollapsed = toggleCollapse('adminCollapsed_blockedDates', blockedDatesCollapsed))} on:keydown={(e) => e.key === 'Enter' && (blockedDatesCollapsed = toggleCollapse('adminCollapsed_blockedDates', blockedDatesCollapsed))}>
 			<h2 class="panel-title">Reserverte datoer</h2>
 			<div class="panel-header-right">
 				<span class="panel-count">{blockedDates.length} datoer</span>
 				<span class="collapse-arrow" class:collapsed={blockedDatesCollapsed}>▾</span>
 			</div>
-		</button>
+		</div>
 		{#if !blockedDatesCollapsed}
 		<div class="blocked-dates-body">
 			<form class="blocked-date-form" on:submit|preventDefault={handleAddBlockedDate}>
