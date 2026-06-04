@@ -12,6 +12,7 @@
 	import type { Theme } from '../../../stores/theme'
 	import { mySuspension } from '../../../stores/suspension'
 	import { formatSuspensionDate } from '$lib/api/suspensions'
+	import { myQuotaStatus } from '../../../stores/quota'
 
 	const navigateTo = (url: string) => {
 		goto(`${base}${url}`)
@@ -86,15 +87,21 @@
 		</a>
 
 		{#if $isAuthenticated}
+			{@const quotaExceeded = $myQuotaStatus?.enabled && ($myQuotaStatus.usedHours ?? 0) >= ($myQuotaStatus.maxHours ?? Infinity)}
+			{@const disabledReason = $mySuspension
+				? `Du er suspendert frem til ${formatSuspensionDate($mySuspension.suspendedUntil)}`
+				: quotaExceeded
+				? `Du har brukt opp kvoten din denne perioden (${$myQuotaStatus?.usedHours?.toFixed(1)}t av ${$myQuotaStatus?.maxHours}t)`
+				: undefined}
 			<span
 				class="new-booking-wrapper"
-				title={$mySuspension ? `Du er suspendert frem til ${formatSuspensionDate($mySuspension.suspendedUntil)}` : undefined}
+				title={disabledReason}
 			>
 				<button
 					id="toggleModalButton"
 					on:click={toggleNewBookingModal}
-					disabled={$mySuspension !== null}
-					class:suspended={$mySuspension !== null}
+					disabled={!!disabledReason}
+					class:suspended={!!disabledReason}
 				>
 					<p>Ny booking</p>
 					<span class="icon">+</span>
