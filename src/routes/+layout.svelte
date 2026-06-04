@@ -3,6 +3,7 @@
 	import Footer from '../lib/components/footer/footer.svelte'
 	import Modal from '$lib/components/modal/modal.svelte'
 	import SuspensionBanner from '$lib/components/suspension/SuspensionBanner.svelte'
+	import QuotaBanner from '$lib/components/quota/QuotaBanner.svelte'
 	import '../app.css'
 	import { showModal, modalContent } from '../stores/modal'
 	import type { User } from '../types/User'
@@ -71,6 +72,7 @@
 <div class="app">
 	<Header />
 	<SuspensionBanner />
+	<QuotaBanner />
 
 	<main>
 		<slot />

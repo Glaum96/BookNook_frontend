@@ -299,17 +299,31 @@
 	let ruleValues: Record<string, number> = {}
 	let savedRuleValues: Record<string, number> = {}
 	let savingRuleId: string | null = null
+	let rulePeriodTypes: Record<string, string> = {}
+	let rulePeriodDays: Record<string, number> = {}
+	let savedRulePeriodTypes: Record<string, string> = {}
+	let savedRulePeriodDays: Record<string, number> = {}
 
 	$: if (rules.length && Object.keys(ruleValues).length === 0) {
 		ruleValues = Object.fromEntries(rules.map((r) => [r.id, r.value]))
 		savedRuleValues = { ...ruleValues }
+		rulePeriodTypes = Object.fromEntries(rules.map((r) => [r.id, r.periodType ?? 'month']))
+		rulePeriodDays = Object.fromEntries(rules.map((r) => [r.id, r.periodDays ?? 30]))
+		savedRulePeriodTypes = { ...rulePeriodTypes }
+		savedRulePeriodDays = { ...rulePeriodDays }
 	}
 
 	function getRuleDescription(rule: Rule): string {
 		const v = ruleValues[rule.id] ?? rule.value
+		const pt = rulePeriodTypes[rule.id] ?? rule.periodType ?? 'month'
+		const pd = rulePeriodDays[rule.id] ?? rule.periodDays ?? 30
 		switch (rule.id) {
 			case 'MAX_ACTIVE_BOOKINGS': return `Maks antall aktive bookinger per bruker: ${v}`
 			case 'MAX_BOOKING_FUTURE_DAYS': return `En booking kan maks opprettes ${v} dager frem i tid`
+			case 'MAX_HOURS_PER_PERIOD': {
+				const pLabel = pt === 'month' ? 'måneden' : pt === 'quarter' ? 'kvartalet' : pt === 'year' ? 'året' : `${pd} dager`
+				return `Maks ${v} timer per ${pLabel}`
+			}
 			default: return rule.description
 		}
 	}
@@ -317,17 +331,28 @@
 	async function handleToggleRule(rule: Rule) {
 		const newEnabled = !rule.enabled
 		rules = rules.map((r) => (r.id === rule.id ? { ...r, enabled: newEnabled } : r))
-		await updateRule(rule.id, newEnabled, rule.value)
+		await updateRule(rule.id, newEnabled, rule.value, rule.periodType, rule.periodDays)
 	}
 
 	async function handleSaveRuleValue(rule: Rule) {
 		const newValue = ruleValues[rule.id]
 		if (!newValue || newValue < 1) return
 		savingRuleId = rule.id
-		rules = rules.map((r) => (r.id === rule.id ? { ...r, value: newValue } : r))
-		await updateRule(rule.id, rule.enabled, newValue)
+		const pt = rulePeriodTypes[rule.id]
+		const pd = pt === 'days' ? rulePeriodDays[rule.id] : undefined
+		rules = rules.map((r) => (r.id === rule.id ? { ...r, value: newValue, periodType: pt, periodDays: pd } : r))
+		await updateRule(rule.id, rule.enabled, newValue, pt, pd)
 		savedRuleValues[rule.id] = newValue
+		savedRulePeriodTypes[rule.id] = pt
+		if (pd != null) savedRulePeriodDays[rule.id] = pd
 		savingRuleId = null
+	}
+
+	function isPeriodDirty(rule: Rule): boolean {
+		if (rule.id !== 'MAX_HOURS_PER_PERIOD') return false
+		if (rulePeriodTypes[rule.id] !== savedRulePeriodTypes[rule.id]) return true
+		if (rulePeriodTypes[rule.id] === 'days' && rulePeriodDays[rule.id] !== savedRulePeriodDays[rule.id]) return true
+		return false
 	}
 
 	const handleDeleteBooking = async (bookingId: string) => {
@@ -392,9 +417,31 @@
 							bind:value={ruleValues[rule.id]}
 							disabled={!rule.enabled}
 						/>
+						{#if rule.id === 'MAX_HOURS_PER_PERIOD'}
+							<select
+								class="rule-period-select"
+								bind:value={rulePeriodTypes[rule.id]}
+								disabled={!rule.enabled}
+							>
+								<option value="month">Per måned</option>
+								<option value="quarter">Per kvartal</option>
+								<option value="year">Per år</option>
+								<option value="days">Egendefinert</option>
+							</select>
+							{#if rulePeriodTypes[rule.id] === 'days'}
+								<input
+									class="rule-value-input"
+									type="number"
+									min="1"
+									placeholder="dager"
+									bind:value={rulePeriodDays[rule.id]}
+									disabled={!rule.enabled}
+								/>
+							{/if}
+						{/if}
 						<button
 							class="btn-icon rule-save-btn"
-							disabled={!rule.enabled || savingRuleId === rule.id || ruleValues[rule.id] === savedRuleValues[rule.id]}
+							disabled={!rule.enabled || savingRuleId === rule.id || (ruleValues[rule.id] === savedRuleValues[rule.id] && !isPeriodDirty(rule))}
 							on:click={() => handleSaveRuleValue(rule)}
 						>
 							{#if savingRuleId === rule.id}
@@ -1275,6 +1322,20 @@
 	}
 
 	.rule-save-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.rule-period-select {
+		padding: 0.4rem 0.5rem;
+		border: 1px solid var(--border-color);
+		border-radius: 5px;
+		font-size: 0.9rem;
+		background-color: var(--bg-input);
+		color: var(--text-body);
+	}
+
+	.rule-period-select:disabled {
 		opacity: 0.4;
 		cursor: not-allowed;
 	}

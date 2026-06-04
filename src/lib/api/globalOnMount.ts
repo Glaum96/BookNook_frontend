@@ -7,6 +7,8 @@ import type { User } from '../../types/User'
 import { fetchMyBookings } from './bookings'
 import { fetchMySuspension } from './suspensions'
 import { mySuspension } from '../../stores/suspension'
+import { fetchMyQuotaStatus } from './quota'
+import { myQuotaStatus } from '../../stores/quota'
 import { addUserToLocalStorage, getUserFromLocalStorage } from './users'
 
 interface IGlobalOnMountResult {
@@ -18,7 +20,9 @@ export const globalOnMount = async (): Promise<IGlobalOnMountResult> => {
 	checkAuth()
 	checkAdminUser()
 	checkIncludePastBookings()
-	mySuspension.set(await fetchMySuspension())
+	const [suspension, quota] = await Promise.all([fetchMySuspension(), fetchMyQuotaStatus()])
+	mySuspension.set(suspension)
+	myQuotaStatus.set(quota)
 	if (!isAuthenticated) {
 		goto(`${base}/login`)
 	}
