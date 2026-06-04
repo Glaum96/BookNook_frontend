@@ -164,6 +164,9 @@
 	let affectedTargetUserId = ''
 	let deletingAffected = false
 
+	// Remove suspension feedback
+	let removedSuspensionUserId: string | null = null
+
 	function isSuspended(userId: string): boolean {
 		return suspensions.some((s) => s.userId === userId)
 	}
@@ -225,6 +228,8 @@
 		const ok = await deleteSuspension(userId)
 		if (ok) {
 			suspensions = suspensions.filter((s) => s.userId !== userId)
+			removedSuspensionUserId = userId
+			setTimeout(() => (removedSuspensionUserId = null), 2500)
 		}
 	}
 
@@ -388,7 +393,9 @@
 							<td class="col-actions">
 								<div class="action-group">
 									<button class="btn-icon" on:click={() => openEditUserModal(user)}>Rediger</button>
-									{#if isSuspended(user.id)}
+									{#if removedSuspensionUserId === user.id}
+										<span class="remove-suspension-ok">✓ Suspensjon fjernet</span>
+									{:else if isSuspended(user.id)}
 										<button
 											class="btn-icon btn-icon--warning"
 											on:click={() => handleRemoveSuspension(user.id)}
@@ -1099,6 +1106,13 @@
 
 	.save-button--danger {
 		background: var(--color-danger-text, #c0392b);
+	}
+
+	.remove-suspension-ok {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--color-success, #2a7a2a);
+		white-space: nowrap;
 	}
 
 	.btn-icon--warning {
