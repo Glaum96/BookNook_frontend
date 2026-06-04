@@ -7,7 +7,7 @@
 	import { getDate, getTime } from '$lib/functions/dateFunctions.js'
 	import { deleteBooking, fetchAllBookings, updateBooking } from '$lib/api/bookings'
 	import { deleteUser, fetchAllUsers, setUserAdmin, updateUser } from '$lib/api/users'
-	import { fetchRules, toggleRule, type Rule } from '$lib/api/rules'
+	import { fetchRules, updateRule, type Rule } from '$lib/api/rules'
 	import { goto } from '$app/navigation'
 	import { base } from '$app/paths'
 	import { isLoading } from '../../stores/loading'
@@ -26,6 +26,7 @@
 
 	const usersLoading = isLoading('users')
 	const bookingsLoading = isLoading('bookings')
+	const rulesLoading = isLoading('rules')
 	const deleteBookingLoading = isLoading('deleteBooking')
 	const deleteUserLoading = isLoading('deleteUser')
 
@@ -295,10 +296,38 @@
 		checkinSummary = new Map(summary.map((s) => [s.bookingId, s]))
 	})
 
+	let ruleValues: Record<string, number> = {}
+	let savedRuleValues: Record<string, number> = {}
+	let savingRuleId: string | null = null
+
+	$: if (rules.length && Object.keys(ruleValues).length === 0) {
+		ruleValues = Object.fromEntries(rules.map((r) => [r.id, r.value]))
+		savedRuleValues = { ...ruleValues }
+	}
+
+	function getRuleDescription(rule: Rule): string {
+		const v = ruleValues[rule.id] ?? rule.value
+		switch (rule.id) {
+			case 'MAX_ACTIVE_BOOKINGS': return `Maks antall aktive bookinger per bruker: ${v}`
+			case 'MAX_BOOKING_FUTURE_DAYS': return `En booking kan maks opprettes ${v} dager frem i tid`
+			default: return rule.description
+		}
+	}
+
 	async function handleToggleRule(rule: Rule) {
 		const newEnabled = !rule.enabled
 		rules = rules.map((r) => (r.id === rule.id ? { ...r, enabled: newEnabled } : r))
-		await toggleRule(rule.id, newEnabled)
+		await updateRule(rule.id, newEnabled, rule.value)
+	}
+
+	async function handleSaveRuleValue(rule: Rule) {
+		const newValue = ruleValues[rule.id]
+		if (!newValue || newValue < 1) return
+		savingRuleId = rule.id
+		rules = rules.map((r) => (r.id === rule.id ? { ...r, value: newValue } : r))
+		await updateRule(rule.id, rule.enabled, newValue)
+		savedRuleValues[rule.id] = newValue
+		savingRuleId = null
 	}
 
 	const handleDeleteBooking = async (bookingId: string) => {
@@ -339,17 +368,42 @@
 			<h2 class="panel-title">Regler</h2>
 			<span class="panel-count">{rules.length} regler</span>
 		</div>
+		{#if $rulesLoading && rules.length === 0}
+			<div class="loading-container">
+				<Spinner size="medium" label="Laster regler..." />
+			</div>
+		{/if}
 		<div class="rules-list">
 			{#each rules as rule (rule.id)}
 				<div class="rule-card">
 					<div class="rule-info">
 						<span class="rule-name">{rule.name}</span>
-						<span class="rule-description">{rule.description}</span>
+						<span class="rule-description">{getRuleDescription(rule)}</span>
 					</div>
-					<label class="toggle-switch">
-						<input type="checkbox" checked={rule.enabled} on:change={() => handleToggleRule(rule)} />
-						<span class="toggle-slider"></span>
-					</label>
+					<div class="rule-controls">
+						<label class="toggle-switch">
+							<input type="checkbox" checked={rule.enabled} on:change={() => handleToggleRule(rule)} />
+							<span class="toggle-slider"></span>
+						</label>
+						<input
+							class="rule-value-input"
+							type="number"
+							min="1"
+							bind:value={ruleValues[rule.id]}
+							disabled={!rule.enabled}
+						/>
+						<button
+							class="btn-icon rule-save-btn"
+							disabled={!rule.enabled || savingRuleId === rule.id || ruleValues[rule.id] === savedRuleValues[rule.id]}
+							on:click={() => handleSaveRuleValue(rule)}
+						>
+							{#if savingRuleId === rule.id}
+								<Spinner size="small" inline />
+							{:else}
+								Lagre
+							{/if}
+						</button>
+					</div>
 				</div>
 			{/each}
 		</div>
@@ -1195,6 +1249,34 @@
 		border: 1px solid var(--bg-card-alt);
 		border-radius: 8px;
 		margin-bottom: 0.75rem;
+	}
+
+	.rule-controls {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-shrink: 0;
+	}
+
+	.rule-value-input {
+		width: 70px;
+		padding: 0.4rem 0.5rem;
+		border: 1px solid var(--border-color);
+		border-radius: 5px;
+		font-size: 1rem;
+		text-align: center;
+		background-color: var(--bg-input);
+		color: var(--text-body);
+	}
+
+	.rule-value-input:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.rule-save-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
 	}
 
 	.rule-info {

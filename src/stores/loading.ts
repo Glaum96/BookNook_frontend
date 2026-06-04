@@ -4,6 +4,7 @@ type LoadingKeys =
 	| 'bookings'
 	| 'myBookings'
 	| 'users'
+	| 'rules'
 	| 'login'
 	| 'register'
 	| 'calendar'
@@ -16,6 +17,7 @@ const loadingStates = writable<Record<LoadingKeys, boolean>>({
 	bookings: false,
 	myBookings: false,
 	users: false,
+	rules: false,
 	login: false,
 	register: false,
 	calendar: false,
